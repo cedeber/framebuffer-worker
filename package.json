@@ -1,0 +1,26 @@
+{
+	"private": true,
+	"name": "framebuffer-worker",
+	"version": "1.0.0-beta.1",
+	"description": "Draw on a Canvas from a Web Worker",
+	"exports": "./index.js",
+	"type": "module",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/cedeber/framebuffer-worker.git"
+	},
+	"keywords": [
+		"worker",
+		"canvas",
+		"framebuffer"
+	],
+	"author": "Cédric Eberhardt <hello+code@cedeber.fr>",
+	"license": "Unlicense",
+	"bugs": {
+		"url": "https://github.com/cedeber/framebuffer-worker/issues"
+	},
+	"homepage": "https://github.com/cedeber/framebuffer-worker#readme"
+}

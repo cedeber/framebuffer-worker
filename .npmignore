@@ -1,0 +1,10 @@
+/.idea
+/.vscode
+/.github
+/src
+/tests
+/target
+/*config*
+/.*rc*
+*.md
+*-lock*
