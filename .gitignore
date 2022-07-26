@@ -6,3 +6,4 @@
 /js/*.js
 /js/*.d.ts
 /js/wasm
+!/js/types.d.ts
