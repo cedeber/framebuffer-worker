@@ -1,0 +1,19 @@
+{
+	"compilerOptions": {
+		"allowJs": true,
+		"declaration": true,
+		"forceConsistentCasingInFileNames": true,
+		"importsNotUsedAsValues": "error",
+		"isolatedModules": true,
+		"lib": ["DOM", "DOM.Iterable", "ESNext", "WebWorker"],
+		"module": "ESNext",
+		"moduleResolution": "Node16",
+		"removeComments": true,
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"target": "ESNext"
+	},
+	"include": ["js/*.ts"],
+	"exclude": ["node_modules", "**/node_modules/*"]
+}

@@ -1,7 +1,7 @@
-import init, { well } from "./pkg/canvas.js";
+import init, { well } from "./wasm/canvas.js";
 
-init().then(() => {
-	let sab;
+(init as any)().then(() => {
+	let sab: SharedArrayBuffer;
 
 	self.onmessage = ({ data }) => {
 		if (typeof data !== "string" && !data.eventName) {

@@ -2,4 +2,7 @@
 /.idea
 /.vscode
 /target
-/pkg
+/node_modules
+/js/*.js
+/js/*.d.ts
+/js/wasm

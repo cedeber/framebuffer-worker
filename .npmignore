@@ -8,3 +8,11 @@
 /.*rc*
 *.md
 *-lock*
+/js/*.ts
+!/js/*.d.ts
+/Cargo.*
+*.html
+/*.js
+*.py
+*.sh
+*.toml
