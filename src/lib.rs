@@ -91,6 +91,8 @@ pub fn well(what: JsValue, width: u32, height: u32, x: i32, y: i32) -> Result<()
 		length,
 	};
 
+	display.reset();
+
 	// clear
 	let style = PrimitiveStyleBuilder::new()
 		.stroke_color(Rgb888::RED)
@@ -100,8 +102,13 @@ pub fn well(what: JsValue, width: u32, height: u32, x: i32, y: i32) -> Result<()
 
 	let rect = Rectangle::new(Point::new(0, 0), Size::new(1720, 800)).into_styled(style);
 
-	let circle = Circle::new(Point::new(22, 22), 20)
-		.into_styled(PrimitiveStyle::with_stroke(Rgb888::BLACK, 1));
+	for y in 0..35 {
+		for x in 0..75 {
+			let circle = Circle::new(Point::new(x * 22, y * 22), 20)
+				.into_styled(PrimitiveStyle::with_stroke(Rgb888::BLACK, 1));
+			circle.draw(&mut display).unwrap();
+		}
+	}
 
 	let line_x = Line::new(Point::new(x, 0), Point::new(x, 800))
 		.into_styled(PrimitiveStyle::with_stroke(Rgb888::BLUE, 1));
@@ -109,9 +116,8 @@ pub fn well(what: JsValue, width: u32, height: u32, x: i32, y: i32) -> Result<()
 	let line_y = Line::new(Point::new(0, y), Point::new(1720, y))
 		.into_styled(PrimitiveStyle::with_stroke(Rgb888::GREEN, 1));
 
-	display.reset();
 	rect.draw(&mut display).unwrap();
-	circle.draw(&mut display).unwrap();
+	// circle.draw(&mut display).unwrap();
 	line_x.draw(&mut display).unwrap();
 	line_y.draw(&mut display).unwrap();
 

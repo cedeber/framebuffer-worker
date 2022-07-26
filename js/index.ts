@@ -1,5 +1,5 @@
 import type { WorkerApi } from "./types.js";
-import { throttle } from "./utils.js";
+import { better_throttle as throttle } from "./utils.js";
 
 const init = (canvas: HTMLCanvasElement) => {
 	// TODO, return worker?, eventList?
@@ -38,6 +38,7 @@ const init = (canvas: HTMLCanvasElement) => {
 			const debCb = throttle((e) => {
 				//! We may miss the last frame on move here
 				if (!isWorking && eventName === "pointermove") {
+					isWorking = true;
 					worker.postMessage({
 						event: eventName,
 						data: {
@@ -46,7 +47,6 @@ const init = (canvas: HTMLCanvasElement) => {
 							type: e.type,
 						},
 					});
-					isWorking = true;
 				}
 			}, 16);
 			canvas.addEventListener(eventName, debCb);
@@ -66,7 +66,6 @@ const init = (canvas: HTMLCanvasElement) => {
 				// TODO Shouldn't draw here
 				worker.postMessage({ event: "draw" });
 			} else if (event === "reload") {
-				isWorking = false;
 				requestAnimationFrame(() => {
 					const frameBuffer = u8Array.slice(0);
 					const start = performance.now();
@@ -74,6 +73,7 @@ const init = (canvas: HTMLCanvasElement) => {
 					ctx.putImageData(imgData, 0, 0);
 					const end = performance.now();
 					console.log("render", `${(end - start).toFixed(0)}ms`);
+					isWorking = false;
 				});
 			}
 		});
