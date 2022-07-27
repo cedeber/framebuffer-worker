@@ -23,22 +23,27 @@ export default function better_throttle(func: (...args: any[]) => unknown, wait 
 	let timeout: number | undefined;
 	let result: unknown;
 	let previous = 0;
+	let argsList: any[] | null = null;
 
 	const throttled = function (this: any, ...args: any[]) {
-		var _now = performance.now();
-		var remaining = wait - (_now - previous);
+		const _now = performance.now();
+		const remaining = wait - (_now - previous);
+		argsList = args;
+
 		if (remaining <= 0 || remaining > wait) {
 			if (timeout) {
 				clearTimeout(timeout);
 				timeout = undefined;
 			}
 			previous = _now;
-			result = func.call(this, ...args);
+			result = func.call(this, ...argsList);
+			if (!timeout) argsList = null;
 		} else if (!timeout) {
 			timeout = setTimeout(() => {
 				previous = performance.now();
 				timeout = undefined;
-				result = func.call(this, ...args);
+				result = func.call(this, ...argsList);
+				if (!timeout) argsList = null;
 			}, remaining);
 		}
 		return result;
@@ -48,6 +53,7 @@ export default function better_throttle(func: (...args: any[]) => unknown, wait 
 		clearTimeout(timeout);
 		previous = 0;
 		timeout = undefined;
+		argsList = null;
 	};
 
 	return throttled;
