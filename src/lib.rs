@@ -67,6 +67,28 @@ impl OriginDimensions for FrameBufferDisplay {
 }
 
 #[wasm_bindgen]
+pub struct Color {
+	red: u8,
+	green: u8,
+	blue: u8,
+	// alpha: u8,
+}
+
+#[wasm_bindgen]
+impl Color {
+	#[wasm_bindgen(constructor)]
+	pub fn new(red: u8, green: u8, blue: u8) -> Self {
+		Color { red, green, blue }
+	}
+}
+
+impl From<Color> for Rgb888 {
+	fn from(color: Color) -> Self {
+		Rgb888::new(color.red, color.green, color.blue)
+	}
+}
+
+#[wasm_bindgen]
 pub struct Drawing {
 	display: FrameBufferDisplay,
 }
@@ -94,9 +116,9 @@ impl Drawing {
 	}
 
 	#[wasm_bindgen]
-	pub fn line(&mut self, x1: i32, y1: i32, x2: i32, y2: i32) {
+	pub fn line(&mut self, x1: i32, y1: i32, x2: i32, y2: i32, color: Color, width: u32) {
 		Line::new(Point::new(x1, y1), Point::new(x2, y2))
-			.into_styled(PrimitiveStyle::with_stroke(Rgb888::BLUE, 1))
+			.into_styled(PrimitiveStyle::with_stroke(color.into(), width))
 			.draw(&mut self.display)
 			.unwrap();
 	}

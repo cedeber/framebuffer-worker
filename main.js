@@ -1,4 +1,4 @@
-import { init } from "./js/index.js";
+import { init, Color } from "./js/index.js";
 
 // Animate the loading spinner via JavaScript to see if the main thread is not blocked.
 const loading = document.getElementById("loading");
@@ -20,5 +20,5 @@ requestAnimationFrame(animate);
 const canvas = document.getElementById("canvas");
 
 init(canvas).then(({ line }) => {
-	line(0, 0, canvas.width, canvas.height);
+	line(0, 0, canvas.width, canvas.height, new Color(255, 255, 255), 1);
 });

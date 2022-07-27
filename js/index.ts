@@ -1,6 +1,19 @@
 import type { DrawingApi, WorkerApi } from "./types.js";
 import { better_throttle as throttle } from "./utils.js";
 
+// Reproduce the Color (Rust) struct
+class Color {
+	red: number;
+	green: number;
+	blue: number;
+
+	constructor(red: number, green: number, blue: number) {
+		this.red = red;
+		this.green = green;
+		this.blue = blue;
+	}
+}
+
 const init = (canvas: HTMLCanvasElement): Promise<DrawingApi> => {
 	return new Promise<DrawingApi>((resolve) => {
 		// Canvas and SharedArrayBuffer setup
@@ -26,8 +39,8 @@ const init = (canvas: HTMLCanvasElement): Promise<DrawingApi> => {
 			reset() {
 				worker.postMessage({ event: "reset", data: {} });
 			},
-			line(x1, y1, x2, y2) {
-				worker.postMessage({ event: "line", data: { x1, y1, x2, y2 } });
+			line(x1, y1, x2, y2, color, width) {
+				worker.postMessage({ event: "line", data: { x1, y1, x2, y2, color, width } });
 			},
 		};
 
@@ -85,4 +98,4 @@ const init = (canvas: HTMLCanvasElement): Promise<DrawingApi> => {
 	});
 };
 
-export { init };
+export { init, Color };
