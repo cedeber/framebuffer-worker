@@ -16,8 +16,9 @@ const animate = (time) => {
 
 requestAnimationFrame(animate);
 
+/** @type HTMLCanvasElement */
 const canvas = document.getElementById("canvas");
-init(canvas).then(() => {
-	console.log("go");
-	// Ready to draw :-D
+
+init(canvas).then(({ line }) => {
+	line(0, 0, canvas.width, canvas.height);
 });

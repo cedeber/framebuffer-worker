@@ -1,9 +1,13 @@
 import type { WorkerApi } from "./types.js";
 import { better_throttle as throttle } from "./utils.js";
 
-const init = (canvas: HTMLCanvasElement) => {
-	// TODO, return worker?, eventList?
-	return new Promise<void>((resolve) => {
+interface Api {
+	reset(): void;
+	line(x1: number, y1: number, x2: number, y2: number): void;
+}
+
+const init = (canvas: HTMLCanvasElement): Promise<Api> => {
+	return new Promise<Api>((resolve) => {
 		// Canvas and SharedArrayBuffer setup
 		// TODO: screen pixel density, aka Retina Display for instance (probably only integer)
 		const ctx = canvas.getContext("2d")!;
@@ -20,6 +24,17 @@ const init = (canvas: HTMLCanvasElement) => {
 		// No need to draw if something is already running
 		// Set to `true` by default because we need to wait for Wasm.
 		let isWorking = true;
+
+		// This is the API exposed from the module.
+		// It will be send only once everything is ready.
+		const api: Api = {
+			reset() {
+				worker.postMessage({ event: "reset", data: {} });
+			},
+			line(x1, y1, x2, y2) {
+				worker.postMessage({ event: "line", data: { x1, y1, x2, y2 } });
+			},
+		};
 
 		[
 			// "mouseenter",
@@ -48,11 +63,11 @@ const init = (canvas: HTMLCanvasElement) => {
 						},
 					});
 				}
-			}, 16);
+			}, 50);
 			canvas.addEventListener(eventName, debCb);
 		});
 
-		worker.addEventListener("message", ({ data: { event, data } }: MessageEvent<WorkerApi>) => {
+		worker.addEventListener("message", ({ data: { event } }: MessageEvent<WorkerApi>) => {
 			if (event === "ready") {
 				worker.postMessage({
 					event: "start",
@@ -61,18 +76,13 @@ const init = (canvas: HTMLCanvasElement) => {
 			} else if (event === "go") {
 				// Allow to draw now :-D
 				isWorking = false;
-				resolve();
-
-				// TODO Shouldn't draw here
-				worker.postMessage({ event: "draw" });
+				resolve(api);
 			} else if (event === "reload") {
 				requestAnimationFrame(() => {
 					const frameBuffer = u8Array.slice(0);
-					const start = performance.now();
 					const imgData = new ImageData(frameBuffer, WIDTH, HEIGHT);
+					// TODO Drag the picture left <-> right here
 					ctx.putImageData(imgData, 0, 0);
-					const end = performance.now();
-					console.log("render", `${(end - start).toFixed(0)}ms`);
 					isWorking = false;
 				});
 			}
