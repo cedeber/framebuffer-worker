@@ -1,13 +1,8 @@
-import type { WorkerApi } from "./types.js";
+import type { DrawingApi, WorkerApi } from "./types.js";
 import { better_throttle as throttle } from "./utils.js";
 
-interface Api {
-	reset(): void;
-	line(x1: number, y1: number, x2: number, y2: number): void;
-}
-
-const init = (canvas: HTMLCanvasElement): Promise<Api> => {
-	return new Promise<Api>((resolve) => {
+const init = (canvas: HTMLCanvasElement): Promise<DrawingApi> => {
+	return new Promise<DrawingApi>((resolve) => {
 		// Canvas and SharedArrayBuffer setup
 		// TODO: screen pixel density, aka Retina Display for instance (probably only integer)
 		const ctx = canvas.getContext("2d")!;
@@ -27,7 +22,7 @@ const init = (canvas: HTMLCanvasElement): Promise<Api> => {
 
 		// This is the API exposed from the module.
 		// It will be send only once everything is ready.
-		const api: Api = {
+		const api: DrawingApi = {
 			reset() {
 				worker.postMessage({ event: "reset", data: {} });
 			},
