@@ -19,6 +19,19 @@ requestAnimationFrame(animate);
 /** @type HTMLCanvasElement */
 const canvas = document.getElementById("canvas");
 
-init(canvas).then(({ line }) => {
-	line(0, 0, canvas.width, canvas.height, new Color(255, 255, 255), 1);
+init(canvas).then(({ reset, line }) => {
+	const draw = () => {
+		line(0, 0, canvas.width, canvas.height, new Color(255, 255, 255), 1);
+		line(10, 10, 30, 40, new Color(255, 255, 255), 7);
+		line(50, 80, 270, 40, new Color(255, 255, 255), 3);
+	};
+
+	draw();
+
+	canvas.addEventListener("pointermove", (event) => {
+		reset();
+		draw();
+		line(event.offsetX, 0, event.offsetX, canvas.height);
+		line(0, event.offsetY, canvas.width, event.offsetY);
+	});
 });
