@@ -19,7 +19,7 @@ function throttle(func: (...args: any[]) => unknown, delay = 300) {
 }
 
 // https://underscorejs.org/docs/modules/throttle.html
-export default function better_throttle(func: (...args: any[]) => unknown, wait = 300) {
+function better_throttle(func: (...args: any[]) => unknown, wait = 300) {
 	let timeout: number | undefined;
 	let result: unknown;
 	let previous = 0;

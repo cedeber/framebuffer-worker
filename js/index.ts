@@ -10,8 +10,8 @@ const init = (canvas: HTMLCanvasElement): Promise<DrawingApi> => {
 		const WIDTH = canvas.width;
 		const HEIGHT = canvas.height;
 
-		let sharedArrayBuffer = new SharedArrayBuffer(WIDTH * HEIGHT * 4);
-		var u8Array = new Uint8ClampedArray(sharedArrayBuffer);
+		const sharedArrayBuffer = new SharedArrayBuffer(WIDTH * HEIGHT * 4);
+		const u8Array = new Uint8ClampedArray(sharedArrayBuffer);
 
 		// Instantiate the Worker
 		const worker = new Worker(new URL("./worker.js", import.meta.url), { type: "module" });
@@ -21,7 +21,7 @@ const init = (canvas: HTMLCanvasElement): Promise<DrawingApi> => {
 		let isWorking = true;
 
 		// This is the API exposed from the module.
-		// It will be send only once everything is ready.
+		// It will be sent only once everything is ready.
 		const api: DrawingApi = {
 			reset() {
 				worker.postMessage({ event: "reset", data: {} });
