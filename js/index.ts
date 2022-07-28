@@ -14,6 +14,23 @@ class Color {
 	}
 }
 
+// Instantiate the Worker
+const worker = new Worker(new URL("./worker.js", import.meta.url), { type: "module" });
+
+// Not sure if this is optimized!
+const post = (event: string, data: any = {}) => {
+	return new Promise<void>((resolve) => {
+		const cb = ({ data }) => {
+			if (data.event === "reload") {
+				resolve();
+				worker.removeEventListener("message", cb);
+			}
+		};
+		worker.addEventListener("message", cb);
+		worker.postMessage({ event, data });
+	});
+};
+
 const init = (canvas: HTMLCanvasElement): Promise<DrawingApi> => {
 	return new Promise<DrawingApi>((resolve) => {
 		// Canvas and SharedArrayBuffer setup
@@ -26,13 +43,6 @@ const init = (canvas: HTMLCanvasElement): Promise<DrawingApi> => {
 		const sharedArrayBuffer = new SharedArrayBuffer(WIDTH * HEIGHT * 4);
 		const u8Array = new Uint8ClampedArray(sharedArrayBuffer);
 
-		// Instantiate the Worker
-		const worker = new Worker(new URL("./worker.js", import.meta.url), { type: "module" });
-
-		// No need to draw if something is already running
-		// Set to `true` by default because we need to wait for Wasm.
-		let isWorking = true;
-
 		// This is the API exposed from the module.
 		// It will be sent only once everything is ready.
 		const api: DrawingApi = {
@@ -40,40 +50,17 @@ const init = (canvas: HTMLCanvasElement): Promise<DrawingApi> => {
 				worker.postMessage({ event: "reset", data: {} });
 			},
 			line(x1, y1, x2, y2, color, width) {
-				worker.postMessage({ event: "line", data: { x1, y1, x2, y2, color, width } });
+				return post("line", { x1, y1, x2, y2, color, width });
+			},
+			paint() {
+				requestAnimationFrame(() => {
+					const frameBuffer = u8Array.slice(0);
+					const imgData = new ImageData(frameBuffer, WIDTH, HEIGHT);
+					// TODO Drag the picture left <-> right here
+					ctx.putImageData(imgData, 0, 0);
+				});
 			},
 		};
-
-		[
-			// "mouseenter",
-			// "mousedown",
-			// "mousemove",
-			// "mouseup",
-			// "mousedown",
-			"wheel",
-			"contextmenu",
-			"pointerdown",
-			"pointermove",
-			"pointerup",
-			"pointercancel",
-			"lostpointercapture",
-		].forEach((eventName) => {
-			const debCb = throttle((e) => {
-				//! We may miss the last frame on move here
-				if (!isWorking && eventName === "pointermove") {
-					isWorking = true;
-					worker.postMessage({
-						event: eventName,
-						data: {
-							x: e.offsetX,
-							y: e.offsetY,
-							type: e.type,
-						},
-					});
-				}
-			}, 50);
-			canvas.addEventListener(eventName, debCb);
-		});
 
 		worker.addEventListener("message", ({ data: { event } }: MessageEvent<WorkerApi>) => {
 			if (event === "ready") {
@@ -83,16 +70,7 @@ const init = (canvas: HTMLCanvasElement): Promise<DrawingApi> => {
 				});
 			} else if (event === "go") {
 				// Allow to draw now :-D
-				isWorking = false;
 				resolve(api);
-			} else if (event === "reload") {
-				requestAnimationFrame(() => {
-					const frameBuffer = u8Array.slice(0);
-					const imgData = new ImageData(frameBuffer, WIDTH, HEIGHT);
-					// TODO Drag the picture left <-> right here
-					ctx.putImageData(imgData, 0, 0);
-					isWorking = false;
-				});
 			}
 		});
 	});
