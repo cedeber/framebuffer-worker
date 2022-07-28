@@ -24,7 +24,6 @@ import init, { Color, Drawing } from "./wasm/canvas.js";
 				new Color(color?.red ?? 0, color?.green ?? 0, color?.blue ?? 0),
 				width,
 			);
-			self.postMessage({ event: "reload" });
 		}
 	});
 
