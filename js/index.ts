@@ -21,7 +21,7 @@ const worker = new Worker(new URL("./worker.js", import.meta.url), { type: "modu
 const post = (event: string, data: any = {}) => {
 	return new Promise<void>((resolve) => {
 		const cb = ({ data }) => {
-			if (data.event === "reload") {
+			if (data.event === "done") {
 				resolve();
 				worker.removeEventListener("message", cb);
 			}
@@ -46,18 +46,17 @@ const init = (canvas: HTMLCanvasElement): Promise<DrawingApi> => {
 		// This is the API exposed from the module.
 		// It will be sent only once everything is ready.
 		const api: DrawingApi = {
-			reset() {
-				worker.postMessage({ event: "reset", data: {} });
-			},
-			line(x1, y1, x2, y2, color, width) {
-				return post("line", { x1, y1, x2, y2, color, width });
-			},
-			paint() {
-				requestAnimationFrame(() => {
-					const frameBuffer = u8Array.slice(0);
-					const imgData = new ImageData(frameBuffer, WIDTH, HEIGHT);
-					// TODO Drag the picture left <-> right here
-					ctx.putImageData(imgData, 0, 0);
+			reset: () => post("reset"),
+			line: (x1, y1, x2, y2, color, width) => post("line", { x1, y1, x2, y2, color, width }),
+			paint: () => {
+				return new Promise((resolve) => {
+					requestAnimationFrame(() => {
+						const frameBuffer = u8Array.slice(0);
+						const imgData = new ImageData(frameBuffer, WIDTH, HEIGHT);
+						// TODO Drag the picture left <-> right here
+						ctx.putImageData(imgData, 0, 0);
+						resolve();
+					});
 				});
 			},
 		};
@@ -77,3 +76,4 @@ const init = (canvas: HTMLCanvasElement): Promise<DrawingApi> => {
 };
 
 export { init, Color };
+export { better_throttle as throttle } from "./utils.js";

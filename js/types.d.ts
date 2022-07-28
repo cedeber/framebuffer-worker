@@ -6,8 +6,8 @@ interface WorkerApi {
 }
 
 interface DrawingApi {
-	reset(): void;
-	paint(): void;
+	reset(): Promise<void>;
+	paint(): Promise<void>;
 	line(
 		x1: number,
 		y1: number,

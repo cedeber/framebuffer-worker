@@ -19,13 +19,16 @@ function throttle(func: (...args: any[]) => unknown, delay = 300) {
 }
 
 // https://underscorejs.org/docs/modules/throttle.html
-function better_throttle(func: (...args: any[]) => unknown, wait = 300) {
+function better_throttle(func: (...args: any[]) => Promise<unknown>, wait = 300) {
 	let timeout: number | undefined;
 	let result: unknown;
 	let previous = 0;
 	let argsList: any[] | null = null;
+	let isRunning = false;
 
-	const throttled = function (this: any, ...args: any[]) {
+	const throttled = async function (this: any, ...args: any[]) {
+		if (isRunning) return;
+
 		const _now = performance.now();
 		const remaining = wait - (_now - previous);
 		argsList = args;
@@ -36,16 +39,21 @@ function better_throttle(func: (...args: any[]) => unknown, wait = 300) {
 				timeout = undefined;
 			}
 			previous = _now;
-			result = func.call(this, ...argsList);
+			isRunning = true;
+			result = await func.call(this, ...argsList);
+			isRunning = false;
 			if (!timeout) argsList = null;
 		} else if (!timeout) {
-			timeout = setTimeout(() => {
+			isRunning = true;
+			timeout = setTimeout(async () => {
 				previous = performance.now();
 				timeout = undefined;
-				result = func.call(this, ...argsList);
+				result = await func.call(this, ...argsList);
+				isRunning = false;
 				if (!timeout) argsList = null;
 			}, remaining);
 		}
+
 		return result;
 	};
 

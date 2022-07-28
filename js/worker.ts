@@ -3,6 +3,10 @@ import init, { Color, Drawing } from "./wasm/canvas.js";
 
 // TODO pass `self` to Wasm in order to `self.postMessage({ event: "reload" })`?
 
+const done = () => {
+	self.postMessage({ event: "done" });
+};
+
 (init as any)().then(() => {
 	let drawing: Drawing;
 
@@ -14,6 +18,7 @@ import init, { Color, Drawing } from "./wasm/canvas.js";
 			self.postMessage({ event: "go" });
 		} else if (event === "reset") {
 			drawing.reset();
+			done();
 		} else if (event === "line") {
 			const { x1, y1, x2, y2, color, width = 1 } = data;
 			drawing.line(
@@ -24,6 +29,7 @@ import init, { Color, Drawing } from "./wasm/canvas.js";
 				new Color(color?.red ?? 0, color?.green ?? 0, color?.blue ?? 0),
 				width,
 			);
+			done();
 		}
 	});
 
