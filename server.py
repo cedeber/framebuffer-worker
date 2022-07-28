@@ -9,6 +9,8 @@ class WasmHandler(SimpleHTTPRequestHandler):
         # self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header("Cross-Origin-Opener-Policy", "same-origin")
         self.send_header("Cross-Origin-Embedder-Policy", "require-corp")
+        self.send_header('Cache-Control', 'no-store, must-revalidate')
+        self.send_header('Expires', '0')
         SimpleHTTPRequestHandler.end_headers(self)
 
 
