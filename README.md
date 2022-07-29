@@ -2,6 +2,10 @@
 
 Draw on a Canvas from a Web Worker.
 
+This is definitely not optimized for real-time application, although possible. The main goal is to render a visualization of millions of data which usually take some seconds to render.
+
+By doing it off-the-main-thread, in a Worker, it will never block the UI.
+
 ## How does it work?
 
 As the [`OffscreenCanvas`](https://developer.mozilla.org/en-US/docs/Web/API/OffscreenCanvas) API is still experimental, we draw directly in a [`SharedArrayBuffer`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer).
