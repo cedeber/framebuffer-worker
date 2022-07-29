@@ -8,6 +8,15 @@ As the [`OffscreenCanvas`](https://developer.mozilla.org/en-US/docs/Web/API/Offs
 The drawing is done via `WebAssembly` thanks to the [`embedded_graphics`](https://docs.rs/embedded-graphics/latest/embedded_graphics/index.html) Rust crate, which is instantiated in a `Web Worker`.
 That's why everything is _asynchronous_.
 
+### SharedArrayBuffer support
+
+You need to set two HTTP Headers:
+
+| Header                       | Value        |
+| ---------------------------- | ------------ |
+| Cross-Origin-Opener-Policy   | same-origin  |
+| Cross-Origin-Embedder-Policy | require-corp |
+
 ## Example
 
 ```typescript
