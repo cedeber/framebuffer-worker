@@ -1,5 +1,4 @@
 {
-	"private": true,
 	"name": "framebuffer-worker",
 	"version": "1.0.0-beta.1",
 	"description": "Draw on a Canvas from a Web Worker",
