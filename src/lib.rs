@@ -111,7 +111,7 @@ impl Drawing {
 	}
 
 	#[wasm_bindgen]
-	pub fn reset(&mut self) {
+	pub fn clear(&mut self) {
 		self.display.reset();
 	}
 

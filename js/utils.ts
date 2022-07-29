@@ -18,8 +18,11 @@ function throttle(func: (...args: any[]) => unknown, delay = 300) {
 	};
 }
 
-// https://underscorejs.org/docs/modules/throttle.html
-function better_throttle(func: (...args: any[]) => Promise<unknown>, wait = 300) {
+/**
+ * Throttle a function but wait that the Promise is resolved before running the next one
+ * @see https://underscorejs.org/docs/modules/throttle.html
+ */
+function asyncThrottle(func: (...args: any[]) => Promise<unknown>, wait = 300) {
 	let timeout: number | undefined;
 	let result: unknown;
 	let previous = 0;
@@ -67,4 +70,4 @@ function better_throttle(func: (...args: any[]) => Promise<unknown>, wait = 300)
 	return throttled;
 }
 
-export { debounce, throttle, better_throttle };
+export { debounce, throttle, asyncThrottle };

@@ -16,8 +16,8 @@ const done = () => {
 			drawing = new Drawing(data.sab, data.width, data.height);
 			// Allow to draw now :-D
 			self.postMessage({ event: "go" });
-		} else if (event === "reset") {
-			drawing.reset();
+		} else if (event === "clear") {
+			drawing.clear();
 			done();
 		} else if (event === "line") {
 			const { x1, y1, x2, y2, color, width = 1 } = data;

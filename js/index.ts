@@ -1,7 +1,6 @@
 import type { DrawingApi, WorkerApi } from "./types.js";
-import { better_throttle as throttle } from "./utils.js";
 
-// Reproduce the Color (Rust) struct
+/** Reproduce the Color (Rust) struct */
 class Color {
 	red: number;
 	green: number;
@@ -20,7 +19,7 @@ const worker = new Worker(new URL("./worker.js", import.meta.url), { type: "modu
 // Not sure if this is optimized!
 const post = (event: string, data: any = {}) => {
 	return new Promise<void>((resolve) => {
-		const cb = ({ data }) => {
+		const cb = ({ data }: MessageEvent<WorkerApi>) => {
 			if (data.event === "done") {
 				resolve();
 				worker.removeEventListener("message", cb);
@@ -46,9 +45,9 @@ const init = (canvas: HTMLCanvasElement): Promise<DrawingApi> => {
 		// This is the API exposed from the module.
 		// It will be sent only once everything is ready.
 		const api: DrawingApi = {
-			reset: () => post("reset"),
+			clear: () => post("clear"),
 			line: (x1, y1, x2, y2, color, width) => post("line", { x1, y1, x2, y2, color, width }),
-			paint: () => {
+			render: () => {
 				return new Promise((resolve) => {
 					requestAnimationFrame(() => {
 						const frameBuffer = u8Array.slice(0);
@@ -76,4 +75,4 @@ const init = (canvas: HTMLCanvasElement): Promise<DrawingApi> => {
 };
 
 export { init, Color };
-export { better_throttle as throttle } from "./utils.js";
+export { asyncThrottle } from "./utils.js";

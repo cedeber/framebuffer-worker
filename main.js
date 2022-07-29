@@ -1,4 +1,4 @@
-import { init, Color, throttle } from "./js/index.js";
+import { init, Color, asyncThrottle } from "./js/index.js";
 
 // Animate the loading spinner via JavaScript to see if the main thread is not blocked.
 const loading = document.getElementById("loading");
@@ -19,27 +19,27 @@ requestAnimationFrame(animate);
 /** @type HTMLCanvasElement */
 const canvas = document.getElementById("canvas");
 
-init(canvas).then(async ({ reset, paint, line }) => {
+init(canvas).then(async ({ clear, render, line }) => {
 	const draw = async (i = 0) => {
-		await line(0 + i, 30, canvas.width, canvas.height, new Color(255, 255, 255), 1);
+		await line(i, 0, canvas.width, canvas.height, new Color(255, 255, 255), 1);
 		await line(10 + i, 60, 30, 40, new Color(255, 255, 255), 7);
 		await line(50 + i, 110, 270, 40, new Color(255, 255, 255), 3);
 	};
 
-	await reset();
+	await clear();
 	await draw();
-	await paint();
+	await render();
 
 	const cb = async (event) => {
 		const random = Math.floor(Math.random() * 25);
-		await reset();
+		await clear();
 		for (let i = random; i < 400 + random; i++) {
 			await draw(i);
-			await line(event.offsetX, 0, event.offsetX, canvas.height);
-			await line(0, event.offsetY, canvas.width, event.offsetY);
 		}
-		await paint();
+		await line(event.offsetX, 0, event.offsetX, canvas.height);
+		await line(0, event.offsetY, canvas.width, event.offsetY);
+		await render();
 	};
 
-	canvas.addEventListener("pointermove", throttle(cb, 16));
+	canvas.addEventListener("pointermove", asyncThrottle(cb, 16));
 });

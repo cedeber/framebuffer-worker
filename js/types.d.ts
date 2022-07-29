@@ -6,8 +6,11 @@ interface WorkerApi {
 }
 
 interface DrawingApi {
-	reset(): Promise<void>;
-	paint(): Promise<void>;
+	/** Fill the whole framebuffer with `0x0` */
+	clear(): Promise<void>;
+	/** Render the framebuffer into the Canvas */
+	render(): Promise<void>;
+	/** Draw a line */
 	line(
 		x1: number,
 		y1: number,
