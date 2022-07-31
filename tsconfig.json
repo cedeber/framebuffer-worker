@@ -12,8 +12,10 @@
 		"resolveJsonModule": true,
 		"skipLibCheck": true,
 		"strict": true,
-		"target": "ESNext"
+		"target": "ESNext",
+		"noEmit": true
+		// "emitDeclarationOnly": true
 	},
-	"include": ["js/*.ts"],
+	"include": ["lib/*.ts"],
 	"exclude": ["node_modules", "**/node_modules/*"]
 }
