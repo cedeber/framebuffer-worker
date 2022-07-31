@@ -3,7 +3,7 @@
 /.vscode
 /target
 /node_modules
-/js/*.js
-/js/*.d.ts
-/js/wasm
-!/js/types.d.ts
+/lib/*.js
+/lib/*.d.ts
+/lib/wasm
+!/lib/types.d.ts
