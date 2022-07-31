@@ -2,11 +2,14 @@
 /.vscode
 /.github
 /src
+/tests
 /target
 /*config*
+/.*rc*
 *.md
 *-lock*
-/lib
+/js/*.ts
+!/js/*.d.ts
 /Cargo.*
 *.html
 /*.js

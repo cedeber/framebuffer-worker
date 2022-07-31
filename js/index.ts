@@ -14,7 +14,7 @@ class Color {
 }
 
 // Instantiate the Worker
-const worker = new Worker(new URL("./worker.ts", import.meta.url), { type: "module" });
+const worker = new Worker(new URL("./worker.js", import.meta.url), { type: "module" });
 
 // Not sure if this is optimized!
 const post = (event: string, data: any = {}) => {
