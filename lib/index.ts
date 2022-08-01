@@ -46,7 +46,10 @@ const init = (canvas: HTMLCanvasElement): Promise<DrawingApi> => {
 		// It will be sent only once everything is ready.
 		const api: DrawingApi = {
 			clear: () => post("clear"),
-			line: (x1, y1, x2, y2, color, width) => post("line", { x1, y1, x2, y2, color, width }),
+			line: (x1, y1, x2, y2, strokeColor, strokeWidth) =>
+				post("line", { x1, y1, x2, y2, strokeColor, strokeWidth }),
+			circle: (x, y, diameter, fillColor, strokeColor, strokeWidth) =>
+				post("circle", { x, y, diameter, fillColor, strokeColor, strokeWidth }),
 			render: () => {
 				return new Promise((resolve) => {
 					requestAnimationFrame(() => {

@@ -44,7 +44,7 @@ init(canvas).then(async ({ clear, render, line }) => {
 });
 ```
 
-## Vite config
+## Vite configuration
 
 You need to configure `vite` to build to ES modules.
 You also need to exclude the `framebuffer-worker` module from the dependency pre-bundling as this module is an ES module and use `import.meta.url` internally to load the worker and wasm files.

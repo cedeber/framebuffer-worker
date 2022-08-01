@@ -1,3 +1,6 @@
+mod utils;
+
+use crate::utils::get_style;
 use embedded_graphics::{
 	pixelcolor::Rgb888,
 	prelude::*,
@@ -116,9 +119,37 @@ impl Drawing {
 	}
 
 	#[wasm_bindgen]
-	pub fn line(&mut self, x1: i32, y1: i32, x2: i32, y2: i32, color: Color, width: u32) {
+	pub fn line(
+		&mut self,
+		x1: i32,
+		y1: i32,
+		x2: i32,
+		y2: i32,
+		stroke_color: Color,
+		stroke_width: u32,
+	) {
+		let style = get_style(None, Some(stroke_color), Some(stroke_width));
+
 		Line::new(Point::new(x1, y1), Point::new(x2, y2))
-			.into_styled(PrimitiveStyle::with_stroke(color.into(), width))
+			.into_styled(style)
+			.draw(&mut self.display)
+			.unwrap();
+	}
+
+	#[wasm_bindgen]
+	pub fn circle(
+		&mut self,
+		x: i32,
+		y: i32,
+		diameter: u32,
+		fill_color: Option<Color>,
+		stroke_color: Option<Color>,
+		stroke_width: Option<u32>,
+	) {
+		let style = get_style(fill_color, stroke_color, stroke_width);
+
+		Circle::new(Point::new(x, y), diameter)
+			.into_styled(style)
 			.draw(&mut self.display)
 			.unwrap();
 	}

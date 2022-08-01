@@ -20,14 +20,33 @@ const done = () => {
 			drawing.clear();
 			done();
 		} else if (event === "line") {
-			const { x1, y1, x2, y2, color, width = 1 } = data;
+			const { x1, y1, x2, y2, strokeColor, strokeWidth = 1 } = data;
 			drawing.line(
 				x1,
 				y1,
 				x2,
 				y2,
-				new Color(color?.red ?? 0, color?.green ?? 0, color?.blue ?? 0),
-				width,
+				new Color(strokeColor?.red ?? 0, strokeColor?.green ?? 0, strokeColor?.blue ?? 0),
+				strokeWidth,
+			);
+			done();
+		} else if (event === "circle") {
+			const { x, y, diameter, fillColor, strokeColor, strokeWidth } = data;
+			drawing.circle(
+				x,
+				y,
+				diameter,
+				fillColor
+					? new Color(fillColor?.red ?? 0, fillColor?.green ?? 0, fillColor?.blue ?? 0)
+					: undefined,
+				strokeColor
+					? new Color(
+							strokeColor?.red ?? 0,
+							strokeColor?.green ?? 0,
+							strokeColor?.blue ?? 0,
+					  )
+					: undefined,
+				strokeWidth,
 			);
 			done();
 		}
