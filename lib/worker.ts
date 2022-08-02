@@ -3,14 +3,14 @@ import init, { Color, Drawing } from "./wasm/canvas.js";
 
 // TODO pass `self` to Wasm in order to `self.postMessage({ event: "reload" })`?
 
-const done = () => {
-	self.postMessage({ event: "done" });
+const done = (id: string) => {
+	self.postMessage({ id, event: "done" });
 };
 
 (init as any)().then(() => {
 	let drawing: Drawing;
 
-	self.addEventListener("message", ({ data: { event, data } }: MessageEvent<WorkerApi>) => {
+	self.addEventListener("message", ({ data: { id, event, data } }: MessageEvent<WorkerApi>) => {
 		if (event === "start") {
 			// Receive the Shared Array Buffer from the main thread
 			drawing = new Drawing(data.sab, data.width, data.height);
@@ -18,7 +18,7 @@ const done = () => {
 			self.postMessage({ event: "go" });
 		} else if (event === "clear") {
 			drawing.clear();
-			done();
+			done(id);
 		} else if (event === "line") {
 			const { x1, y1, x2, y2, strokeColor, strokeWidth = 1 } = data;
 			drawing.line(
@@ -29,7 +29,7 @@ const done = () => {
 				new Color(strokeColor?.red ?? 0, strokeColor?.green ?? 0, strokeColor?.blue ?? 0),
 				strokeWidth,
 			);
-			done();
+			done(id);
 		} else if (event === "circle") {
 			const { x, y, diameter, fillColor, strokeColor, strokeWidth } = data;
 			drawing.circle(
@@ -48,7 +48,7 @@ const done = () => {
 					: undefined,
 				strokeWidth,
 			);
-			done();
+			done(id);
 		}
 	});
 

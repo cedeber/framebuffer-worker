@@ -1,6 +1,7 @@
 import { Color } from "./index.js";
 
 interface WorkerApi {
+	id: string;
 	event: string;
 	data?: any;
 }

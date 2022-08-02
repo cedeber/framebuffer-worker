@@ -40,16 +40,12 @@ init(canvas).then(async ({ clear, render, line, circle }) => {
 		const x = event.offsetX;
 		const y = event.offsetY;
 
-		// FIXME, The `done` function to validate the execution does not have a UID
 		await Promise.all([
 			line(x, 0, x, canvas.height),
 			line(0, y, canvas.width, y),
 			circle(x - 10, y - 10, 20, new Color(176, 230, 156), new Color(255, 189, 156), 2),
 		]);
 
-		// await line(x, 0, x, canvas.height);
-		// await line(0, y, canvas.width, y);
-		// await circle(x - 10, y - 10, 20, new Color(176, 230, 156), new Color(255, 189, 156), 2);
 		await render();
 	};
 

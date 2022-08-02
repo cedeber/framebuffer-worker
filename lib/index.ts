@@ -1,4 +1,5 @@
 import type { DrawingApi, WorkerApi } from "./types.js";
+import { uid } from "./utils.js";
 
 /** Reproduce the Color (Rust) struct */
 class Color {
@@ -18,15 +19,16 @@ const worker = new Worker(new URL("./worker.js", import.meta.url), { type: "modu
 
 // Not sure if this is optimized!
 const post = (event: string, data: any = {}) => {
+	const id = uid();
 	return new Promise<void>((resolve) => {
 		const cb = ({ data }: MessageEvent<WorkerApi>) => {
-			if (data.event === "done") {
+			if (data.event === "done" && data.id === id) {
 				resolve();
 				worker.removeEventListener("message", cb);
 			}
 		};
 		worker.addEventListener("message", cb);
-		worker.postMessage({ event, data });
+		worker.postMessage({ id, event, data });
 	});
 };
 
