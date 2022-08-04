@@ -74,6 +74,7 @@ init(canvas).then(async ({ clear, render, line, circle }) => {
 				strokeWidth: 1,
 			}),
 		]);
+
 		await render();
 	};
 

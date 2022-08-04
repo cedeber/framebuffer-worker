@@ -1,23 +1,3 @@
-function debounce(func: (...args: any[]) => unknown, delay = 300) {
-	let timer: number;
-
-	return function (this: any, ...args: any[]) {
-		clearTimeout(timer);
-		timer = window.setTimeout(func.bind(this, ...args), delay);
-	};
-}
-
-function throttle(func: (...args: any[]) => unknown, delay = 300) {
-	let start = performance.now();
-
-	return function (this: any, ...args: any[]) {
-		if (performance.now() - start > delay) {
-			start = performance.now();
-			return func.call(this, ...args);
-		}
-	};
-}
-
 /**
  * Throttle a function but wait that the Promise is resolved before running the next one
  * @see https://underscorejs.org/docs/modules/throttle.html
@@ -70,4 +50,8 @@ function asyncThrottle(func: (...args: any[]) => Promise<unknown>, wait = 300) {
 	return throttled;
 }
 
-export { debounce, throttle, asyncThrottle };
+const uid = (): string => {
+	return Math.random().toString(36).substring(2);
+};
+
+export { asyncThrottle, uid };

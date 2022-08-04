@@ -4,8 +4,8 @@ import type { Point as JsPoint, Color as JsColor } from "./objects.js";
 
 // TODO pass `self` to Wasm in order to `self.postMessage({ event: "reload" })`?
 
-const done = () => {
-	self.postMessage({ event: "done" });
+const done = (id: string) => {
+	self.postMessage({ id, event: "done" });
 };
 
 const toPoint = (point: JsPoint) => new Point(point.x, point.y);
@@ -15,7 +15,7 @@ const toColor = (color?: JsColor) =>
 (init as any)().then(() => {
 	let drawing: Drawing;
 
-	self.addEventListener("message", ({ data: { event, data } }: MessageEvent<WorkerApi<any>>) => {
+	self.addEventListener("message", ({ data: { id, event, data } }: MessageEvent<WorkerApi<any>>) => {
 		if (event === "start") {
 			// Receive the Shared Array Buffer from the main thread
 			drawing = new Drawing(data.sab, data.width, data.height);
@@ -23,7 +23,7 @@ const toColor = (color?: JsColor) =>
 			self.postMessage({ event: "go" });
 		} else if (event === "clear") {
 			drawing.clear();
-			done();
+			done(id);
 		} else if (event === "line") {
 			const { startPoint, endPoint, strokeColor, strokeWidth } = <LineArguments>data;
 			drawing.line(
@@ -32,7 +32,7 @@ const toColor = (color?: JsColor) =>
 				toColor(strokeColor)!,
 				strokeWidth,
 			);
-			done();
+			done(id);
 		} else if (event === "circle") {
 			const { topLeftPoint, diameter, fillColor, strokeColor, strokeWidth } = <
 				CircleArguments
@@ -44,7 +44,7 @@ const toColor = (color?: JsColor) =>
 				toColor(strokeColor),
 				strokeWidth,
 			);
-			done();
+			done(id);
 		}
 	});
 
