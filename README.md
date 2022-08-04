@@ -30,7 +30,7 @@ You need to set two HTTP Headers:
 ## Example
 
 ```typescript
-import { init, Color, asyncThrottle } from "framebuffer-worker";
+import { init, asyncThrottle, Point, Color } from "framebuffer-worker";
 
 const canvas = document.getElementById("canvas");
 
