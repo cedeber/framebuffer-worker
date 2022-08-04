@@ -1,5 +1,6 @@
-import type { WorkerApi } from "./types.js";
-import init, { Color, Drawing } from "./wasm/canvas.js";
+import type { WorkerApi, DrawingApi, LineArguments, CircleArguments } from "./types.js";
+import init, { Color, Drawing, Point } from "./wasm/canvas.js";
+import type { Point as JsPoint, Color as JsColor } from "./objects.js";
 
 // TODO pass `self` to Wasm in order to `self.postMessage({ event: "reload" })`?
 
@@ -7,10 +8,14 @@ const done = () => {
 	self.postMessage({ event: "done" });
 };
 
+const toPoint = (point: JsPoint) => new Point(point.x, point.y);
+const toColor = (color?: JsColor) =>
+	color ? new Color(color.red, color.green, color.blue) : undefined;
+
 (init as any)().then(() => {
 	let drawing: Drawing;
 
-	self.addEventListener("message", ({ data: { event, data } }: MessageEvent<WorkerApi>) => {
+	self.addEventListener("message", ({ data: { event, data } }: MessageEvent<WorkerApi<any>>) => {
 		if (event === "start") {
 			// Receive the Shared Array Buffer from the main thread
 			drawing = new Drawing(data.sab, data.width, data.height);
@@ -20,32 +25,23 @@ const done = () => {
 			drawing.clear();
 			done();
 		} else if (event === "line") {
-			const { x1, y1, x2, y2, strokeColor, strokeWidth = 1 } = data;
+			const { startPoint, endPoint, strokeColor, strokeWidth } = <LineArguments>data;
 			drawing.line(
-				x1,
-				y1,
-				x2,
-				y2,
-				new Color(strokeColor?.red ?? 0, strokeColor?.green ?? 0, strokeColor?.blue ?? 0),
+				toPoint(startPoint),
+				toPoint(endPoint),
+				toColor(strokeColor)!,
 				strokeWidth,
 			);
 			done();
 		} else if (event === "circle") {
-			const { x, y, diameter, fillColor, strokeColor, strokeWidth } = data;
+			const { topLeftPoint, diameter, fillColor, strokeColor, strokeWidth } = <
+				CircleArguments
+			>data;
 			drawing.circle(
-				x,
-				y,
+				toPoint(topLeftPoint),
 				diameter,
-				fillColor
-					? new Color(fillColor?.red ?? 0, fillColor?.green ?? 0, fillColor?.blue ?? 0)
-					: undefined,
-				strokeColor
-					? new Color(
-							strokeColor?.red ?? 0,
-							strokeColor?.green ?? 0,
-							strokeColor?.blue ?? 0,
-					  )
-					: undefined,
+				toColor(fillColor),
+				toColor(strokeColor),
 				strokeWidth,
 			);
 			done();

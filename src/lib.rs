@@ -1,5 +1,7 @@
+mod objects;
 mod utils;
 
+use crate::objects::Color;
 use crate::utils::get_style;
 use embedded_graphics::{
 	pixelcolor::Rgb888,
@@ -70,28 +72,6 @@ impl OriginDimensions for FrameBufferDisplay {
 }
 
 #[wasm_bindgen]
-pub struct Color {
-	red: u8,
-	green: u8,
-	blue: u8,
-	// alpha: u8,
-}
-
-#[wasm_bindgen]
-impl Color {
-	#[wasm_bindgen(constructor)]
-	pub fn new(red: u8, green: u8, blue: u8) -> Self {
-		Color { red, green, blue }
-	}
-}
-
-impl From<Color> for Rgb888 {
-	fn from(color: Color) -> Self {
-		Rgb888::new(color.red, color.green, color.blue)
-	}
-}
-
-#[wasm_bindgen]
 pub struct Drawing {
 	display: FrameBufferDisplay,
 }
@@ -121,16 +101,14 @@ impl Drawing {
 	#[wasm_bindgen]
 	pub fn line(
 		&mut self,
-		x1: i32,
-		y1: i32,
-		x2: i32,
-		y2: i32,
+		start_point: objects::Point,
+		end_point: objects::Point,
 		stroke_color: Color,
 		stroke_width: u32,
 	) {
 		let style = get_style(None, Some(stroke_color), Some(stroke_width));
 
-		Line::new(Point::new(x1, y1), Point::new(x2, y2))
+		Line::new(start_point.into(), end_point.into())
 			.into_styled(style)
 			.draw(&mut self.display)
 			.unwrap();
@@ -139,8 +117,7 @@ impl Drawing {
 	#[wasm_bindgen]
 	pub fn circle(
 		&mut self,
-		x: i32,
-		y: i32,
+		top_left_point: objects::Point,
 		diameter: u32,
 		fill_color: Option<Color>,
 		stroke_color: Option<Color>,
@@ -148,7 +125,25 @@ impl Drawing {
 	) {
 		let style = get_style(fill_color, stroke_color, stroke_width);
 
-		Circle::new(Point::new(x, y), diameter)
+		Circle::new(top_left_point.into(), diameter)
+			.into_styled(style)
+			.draw(&mut self.display)
+			.unwrap();
+	}
+
+	#[wasm_bindgen]
+	pub fn rectangle(
+		&mut self,
+		top_left_point: objects::Point,
+		width: u32,
+		height: u32,
+		fill_color: Option<Color>,
+		stroke_color: Option<Color>,
+		stroke_width: Option<u32>,
+	) {
+		let style = get_style(fill_color, stroke_color, stroke_width);
+
+		Rectangle::new(top_left_point.into(), Size::new(width, height))
 			.into_styled(style)
 			.draw(&mut self.display)
 			.unwrap();

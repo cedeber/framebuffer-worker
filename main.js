@@ -1,4 +1,4 @@
-import { init, Color, asyncThrottle } from "./lib/index.js";
+import { init, asyncThrottle, Point, Color } from "./lib/index.js";
 
 // Animate the loading spinner via JavaScript to see if the main thread is not blocked.
 const loading = document.getElementById("loading");
@@ -21,9 +21,31 @@ const canvas = document.getElementById("canvas");
 
 init(canvas).then(async ({ clear, render, line, circle }) => {
 	const draw = async (i = 0) => {
-		await line(i, 0, canvas.width, canvas.height, new Color(255, 255, 255), 1);
-		await line(10 + i, 60, 30, 40, new Color(255, 255, 255), 7);
-		await line(50 + i, 110, 270, 40, new Color(255, 255, 255), 3);
+		await line({
+			startPoint: new Point(i, 0),
+			endPoint: new Point(canvas.width, canvas.height),
+			strokeColor: new Color(255, 255, 255),
+			strokeWidth: 1,
+		});
+		await line({
+			startPoint: new Point(10 + i, 60),
+			endPoint: new Point(30, 40),
+			strokeColor: new Color(255, 255, 255),
+			strokeWidth: 7,
+		});
+		await line({
+			startPoint: new Point(50 + i, 110),
+			endPoint: new Point(270, 40),
+			strokeColor: new Color(255, 255, 255),
+			strokeWidth: 3,
+		});
+		await circle({
+			topLeftPoint: new Point(10, 10),
+			diameter: 20,
+			fillColor: new Color(176, 230, 156),
+			strokeColor: new Color(255, 189, 156),
+			strokeWidth: 2,
+		});
 	};
 
 	await clear();
@@ -31,25 +53,27 @@ init(canvas).then(async ({ clear, render, line, circle }) => {
 	await render();
 
 	const cb = async (event) => {
-		const random = Math.floor(Math.random() * 25);
-		await clear();
-		// for (let i = random; i < 400 + random; i++) {
-		await draw();
-		// }
-
 		const x = event.offsetX;
 		const y = event.offsetY;
 
+		await clear();
+		await draw();
+
 		// FIXME, The `done` function to validate the execution does not have a UID
 		await Promise.all([
-			line(x, 0, x, canvas.height),
-			line(0, y, canvas.width, y),
-			circle(x - 10, y - 10, 20, new Color(176, 230, 156), new Color(255, 189, 156), 2),
+			line({
+				startPoint: new Point(x, 0),
+				endPoint: new Point(x, canvas.height),
+				strokeColor: new Color(65, 105, 225),
+				strokeWidth: 1,
+			}),
+			line({
+				startPoint: new Point(0, y),
+				endPoint: new Point(canvas.width, y),
+				strokeColor: new Color(65, 105, 225),
+				strokeWidth: 1,
+			}),
 		]);
-
-		// await line(x, 0, x, canvas.height);
-		// await line(0, y, canvas.width, y);
-		// await circle(x - 10, y - 10, 20, new Color(176, 230, 156), new Color(255, 189, 156), 2);
 		await render();
 	};
 

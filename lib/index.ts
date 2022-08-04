@@ -1,25 +1,12 @@
-import type { DrawingApi, WorkerApi } from "./types.js";
-
-/** Reproduce the Color (Rust) struct */
-class Color {
-	red: number;
-	green: number;
-	blue: number;
-
-	constructor(red: number, green: number, blue: number) {
-		this.red = red;
-		this.green = green;
-		this.blue = blue;
-	}
-}
+import type {CircleArguments, DrawingApi, LineArguments, WorkerApi} from "./types.js";
 
 // Instantiate the Worker
 const worker = new Worker(new URL("./worker.js", import.meta.url), { type: "module" });
 
 // Not sure if this is optimized!
-const post = (event: string, data: any = {}) => {
+const post = <T>(event: string, data?: T) => {
 	return new Promise<void>((resolve) => {
-		const cb = ({ data }: MessageEvent<WorkerApi>) => {
+		const cb = ({ data }: MessageEvent<WorkerApi<T>>) => {
 			if (data.event === "done") {
 				resolve();
 				worker.removeEventListener("message", cb);
@@ -30,7 +17,7 @@ const post = (event: string, data: any = {}) => {
 	});
 };
 
-const init = (canvas: HTMLCanvasElement): Promise<DrawingApi> => {
+const start = (canvas: HTMLCanvasElement): Promise<DrawingApi> => {
 	return new Promise<DrawingApi>((resolve) => {
 		// Canvas and SharedArrayBuffer setup
 		// TODO: screen pixel density, aka Retina Display for instance (probably only integer)
@@ -46,10 +33,8 @@ const init = (canvas: HTMLCanvasElement): Promise<DrawingApi> => {
 		// It will be sent only once everything is ready.
 		const api: DrawingApi = {
 			clear: () => post("clear"),
-			line: (x1, y1, x2, y2, strokeColor, strokeWidth) =>
-				post("line", { x1, y1, x2, y2, strokeColor, strokeWidth }),
-			circle: (x, y, diameter, fillColor, strokeColor, strokeWidth) =>
-				post("circle", { x, y, diameter, fillColor, strokeColor, strokeWidth }),
+			line: (args) => post<LineArguments>("line", args),
+			circle: (args) => post<CircleArguments>("circle", args),
 			render: () => {
 				return new Promise((resolve) => {
 					requestAnimationFrame(() => {
@@ -63,7 +48,7 @@ const init = (canvas: HTMLCanvasElement): Promise<DrawingApi> => {
 			},
 		};
 
-		worker.addEventListener("message", ({ data: { event } }: MessageEvent<WorkerApi>) => {
+		worker.addEventListener("message", ({ data: { event } }: MessageEvent<WorkerApi<void>>) => {
 			if (event === "ready") {
 				worker.postMessage({
 					event: "start",
@@ -77,5 +62,6 @@ const init = (canvas: HTMLCanvasElement): Promise<DrawingApi> => {
 	});
 };
 
-export { init, Color };
+export { start as init };
 export { asyncThrottle } from "./utils.js";
+export { Color, Point } from "./objects.js";
