@@ -54,4 +54,24 @@ const uid = (): string => {
 	return Math.random().toString(36).substring(2);
 };
 
-export { asyncThrottle, uid };
+// TODO We should probably go bin/hex within a single loop for performance?
+const mergeImage = (layers: Uint8ClampedArray[]): Uint8ClampedArray => {
+	const length = layers[0].length;
+	let final = new Uint8ClampedArray(length);
+
+	for (let i = 0; i < length; i = i + 4) {
+		for (const layer of layers) {
+			const alpha = layer[i + 3];
+			if (alpha === 0xff) {
+				final[i] = layer[i];
+				final[i + 1] = layer[i + 1];
+				final[i + 2] = layer[i + 2];
+				final[i + 3] = 0xff;
+			}
+		}
+	}
+
+	return final;
+};
+
+export { asyncThrottle, uid, mergeImage };
