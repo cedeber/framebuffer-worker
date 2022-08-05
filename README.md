@@ -76,7 +76,30 @@ init(canvas).then((layer) => {
 You can [play with it on StackBlitz](https://stackblitz.com/edit/framebuffer-worker?file=src/main.ts&view=editor).
 Open the preview in a new tab because the vite config changes the headers. See bellow.
 
-## Basic
+## Basics
+
+## Layers
+
+Every time you create a new layer, it will instantiate a new Worker. Every layer has to be _rendered individually_, though.
+So the time that every layer will take to render, will never affect the other layers rendering speed.
+At every render the layers are merged together, in the order of creation at the moment, so that you do not have to sync between layers yourself.
+
+Currently, the rendering is not optimized if you have multiple real-time layers, because every render call its own `requestAnimationFrame` and merge layers together.
+Opacity is not supported at the moment.
+
+```javascript
+const canvas = document.getElementById("canvas");
+
+init(canvas).then((layer) => {
+	layer().then(async ({ clear, render, line, circle, rectangle }) => {
+		// -- snip --
+	});
+
+	layer().then(async ({ clear, render, line, circle, rectangle }) => {
+		// -- snip --
+	});
+});
+```
 
 ## Clear
 
@@ -85,7 +108,7 @@ It is way faster than "drawing" all pixels one by one with a transparent color.
 
 ## Render
 
-Call `await render();` everytime you want the pixels to appear on the screen.
+Call `await render();` every time you want the pixels to appear on the screen.
 It will merge all layers together, by the order of creation. Last layer on top.
 
 ## Primitives
@@ -134,15 +157,6 @@ await rectangle({
 	},
 });
 ```
-
-## Layers
-
-Everytime you create a new layer, it will instantiate a new Worker. Every layer has to be _rendered individually_, though.
-So the time that every layer will take to render, will never affect the other layers rendering speed.
-At every render the layers are merged together, in the order of creation at the moment, so that you do not have to sync between layers yourself.
-
-Currently, the rendering is not optimized if you have multiple real-time layers, because every render call its own `requestAnimationFrame` and merge layers together.
-Opacity is not supported at the moment.
 
 ## Server configuration
 
