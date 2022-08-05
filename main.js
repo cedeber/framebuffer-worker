@@ -1,5 +1,4 @@
-import { init, asyncThrottle, Point, Color } from "./lib/index.js";
-import { Size } from "./lib/objects.js";
+import { init, asyncThrottle, Point, Color, Size } from "./lib/index.js";
 
 // Animate the loading spinner via JavaScript to see if the main thread is not blocked.
 const loading = document.getElementById("loading");

@@ -1,4 +1,4 @@
-import { Color, Point } from "./index.js";
+import { Point } from "./index.js";
 import { Size, Style } from "./objects.js";
 
 interface WorkerApi<T> {

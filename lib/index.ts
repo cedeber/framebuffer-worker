@@ -94,4 +94,4 @@ const start = async (canvas: HTMLCanvasElement): Promise<() => Promise<DrawingAp
 
 export { start as init };
 export { asyncThrottle } from "./utils.js";
-export { Color, Point } from "./objects.js";
+export { Color, Point, Size, Style } from "./objects.js";
