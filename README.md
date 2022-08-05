@@ -79,6 +79,15 @@ init(canvas).then((layer) => {
 You can [play with it on StackBlitz](https://stackblitz.com/edit/framebuffer-worker?file=src/main.ts&view=editor).
 Open the preview in a new tab because the vite config changes the headers. See bellow.
 
+## Layers
+
+Everytime you create a new layer, it will instantiate a new Worker. Every layer has to be _rendered individually_, though.
+So the time that every layer will take to render, will never affect the other layers rendering speed.
+At every render the layers are merged together, in the order of creation at the moment, so that you do not have to sync between layers yourself.
+
+Currently, the rendering is not optimized if you have multiple real-time layers, because every render call its own `requestAnimationFrame` and merge layers together.
+Opacity is not supported at the moment.
+
 ## Vite configuration
 
 You need to configure `vite` to build to ES modules.
