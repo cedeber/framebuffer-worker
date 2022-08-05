@@ -25,26 +25,26 @@ init(canvas).then((layer) => {
 			await line({
 				startPoint: new Point(i, 0),
 				endPoint: new Point(canvas.width, canvas.height),
-				strokeColor: new Color(255, 255, 255),
+				strokeColor: new Color(255, 105, 180),
 				strokeWidth: 1,
 			});
 			await line({
 				startPoint: new Point(10 + i, 60),
 				endPoint: new Point(30, 40),
-				strokeColor: new Color(255, 255, 255),
+				strokeColor: new Color(255, 105, 180),
 				strokeWidth: 7,
 			});
 			await line({
 				startPoint: new Point(50 + i, 110),
 				endPoint: new Point(270, 40),
-				strokeColor: new Color(255, 255, 255),
+				strokeColor: new Color(255, 105, 180),
 				strokeWidth: 3,
 			});
 			await circle({
 				topLeftPoint: new Point(10, 10),
 				diameter: 20,
 				fillColor: new Color(176, 230, 156),
-				strokeColor: new Color(255, 189, 156),
+				strokeColor: new Color(255, 105, 180),
 				strokeWidth: 2,
 			});
 		};

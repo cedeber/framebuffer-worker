@@ -29,17 +29,24 @@ You need to set two HTTP Headers:
 
 ## Example
 
-```typescript
-import { init, asyncThrottle, Point, Color } from "framebuffer-worker";
+```javascript
+import { init, asyncThrottle, Color, Point } from "framebuffer-worker";
 
 const canvas = document.getElementById("canvas");
 
 init(canvas).then((layer) => {
-	layer().then(async ({ clear, render, line, circle }) => {
+	layer().then(async ({ clear, render, line }) => {
 		await clear();
-		await line(0, 0, canvas.width, canvas.height, new Color(127, 127, 127), 1);
+		await line({
+			startPoint: new Point(0, 0),
+			endPoint: new Point(canvas.width, canvas.height),
+			strokeColor: new Color(127, 127, 127),
+			strokeWidth: 1,
+		});
 		await render();
+	});
 
+	layer().then(async ({ clear, render, line }) => {
 		const cb = async (event) => {
 			const x = event.offsetX;
 			const y = event.offsetY;
@@ -68,6 +75,9 @@ init(canvas).then((layer) => {
 	});
 });
 ```
+
+You can [play with it on StackBlitz](https://stackblitz.com/edit/framebuffer-worker?file=src/main.ts&view=editor).
+Open the preview in a new tab because the vite config changes the headers. See bellow.
 
 ## Vite configuration
 
