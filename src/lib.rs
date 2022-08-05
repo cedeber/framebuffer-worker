@@ -1,12 +1,9 @@
 mod objects;
-mod utils;
 
-use crate::objects::Color;
-use crate::utils::get_style;
 use embedded_graphics::{
 	pixelcolor::Rgb888,
 	prelude::*,
-	primitives::{Circle, Line, PrimitiveStyle, PrimitiveStyleBuilder, Rectangle},
+	primitives::{Circle, Line, Rectangle},
 };
 use js_sys::{SharedArrayBuffer, Uint8ClampedArray};
 use wasm_bindgen::prelude::*;
@@ -103,30 +100,18 @@ impl Drawing {
 		&mut self,
 		start_point: objects::Point,
 		end_point: objects::Point,
-		stroke_color: Color,
-		stroke_width: u32,
+		style: objects::Style,
 	) {
-		let style = get_style(None, Some(stroke_color), Some(stroke_width));
-
 		Line::new(start_point.into(), end_point.into())
-			.into_styled(style)
+			.into_styled(style.into())
 			.draw(&mut self.display)
 			.unwrap();
 	}
 
 	#[wasm_bindgen]
-	pub fn circle(
-		&mut self,
-		top_left_point: objects::Point,
-		diameter: u32,
-		fill_color: Option<Color>,
-		stroke_color: Option<Color>,
-		stroke_width: Option<u32>,
-	) {
-		let style = get_style(fill_color, stroke_color, stroke_width);
-
+	pub fn circle(&mut self, top_left_point: objects::Point, diameter: u32, style: objects::Style) {
 		Circle::new(top_left_point.into(), diameter)
-			.into_styled(style)
+			.into_styled(style.into())
 			.draw(&mut self.display)
 			.unwrap();
 	}
@@ -135,16 +120,11 @@ impl Drawing {
 	pub fn rectangle(
 		&mut self,
 		top_left_point: objects::Point,
-		width: u32,
-		height: u32,
-		fill_color: Option<Color>,
-		stroke_color: Option<Color>,
-		stroke_width: Option<u32>,
+		size: objects::Size,
+		style: objects::Style,
 	) {
-		let style = get_style(fill_color, stroke_color, stroke_width);
-
-		Rectangle::new(top_left_point.into(), Size::new(width, height))
-			.into_styled(style)
+		Rectangle::new(top_left_point.into(), size.into())
+			.into_styled(style.into())
 			.draw(&mut self.display)
 			.unwrap();
 	}

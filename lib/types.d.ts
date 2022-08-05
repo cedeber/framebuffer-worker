@@ -1,4 +1,5 @@
 import { Color, Point } from "./index.js";
+import { Size, Style } from "./objects.js";
 
 interface WorkerApi<T> {
 	id: string;
@@ -10,17 +11,21 @@ interface WorkerApi<T> {
 interface LineArguments {
 	startPoint: Point;
 	endPoint: Point;
-	strokeColor: Color;
-	strokeWidth: number;
+	style: Style;
 }
 
 /** line() function parameters */
 interface CircleArguments {
 	topLeftPoint: Point;
 	diameter: number;
-	fillColor?: Color;
-	strokeColor?: Color;
-	strokeWidth?: number;
+	style: Style;
+}
+
+/** rectangle() function parameters */
+interface RectangleArguments {
+	topLeftPoint: Point;
+	size: Size;
+	style: Style;
 }
 
 /** => Has to fake the Rust API */
@@ -31,6 +36,7 @@ interface DrawingApi {
 	render(): Promise<void>;
 	line(args: LineArguments): Promise<void>;
 	circle(args: CircleArguments): Promise<void>;
+	rectangle(args: RectangleArguments): Promise<void>;
 }
 
-export type { WorkerApi, DrawingApi, LineArguments, CircleArguments };
+export type { WorkerApi, DrawingApi, LineArguments, CircleArguments, RectangleArguments };

@@ -1,4 +1,10 @@
-import type { CircleArguments, DrawingApi, LineArguments, WorkerApi } from "./types.js";
+import type {
+	CircleArguments,
+	DrawingApi,
+	LineArguments,
+	RectangleArguments,
+	WorkerApi,
+} from "./types.js";
 import { mergeImage, uid } from "./utils.js";
 
 // Not sure if this is optimized!
@@ -33,6 +39,7 @@ const start = async (canvas: HTMLCanvasElement): Promise<() => Promise<DrawingAp
 			clear: () => post(worker, "clear"),
 			line: (args) => post<LineArguments>(worker, "line", args),
 			circle: (args) => post<CircleArguments>(worker, "circle", args),
+			rectangle: (args) => post<RectangleArguments>(worker, "rectangle", args),
 			render: () => {
 				return new Promise((resolve) => {
 					requestAnimationFrame(() => {

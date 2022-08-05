@@ -18,15 +18,6 @@ the [`embedded_graphics`](https://docs.rs/embedded-graphics/latest/embedded_grap
 instantiated in a `Web Worker`.
 That's why everything is _asynchronous_.
 
-### SharedArrayBuffer support
-
-You need to set two HTTP Headers:
-
-| Header                       | Value        |
-| ---------------------------- | ------------ |
-| Cross-Origin-Opener-Policy   | same-origin  |
-| Cross-Origin-Embedder-Policy | require-corp |
-
 ## Example
 
 ```javascript
@@ -40,8 +31,10 @@ init(canvas).then((layer) => {
 		await line({
 			startPoint: new Point(0, 0),
 			endPoint: new Point(canvas.width, canvas.height),
-			strokeColor: new Color(127, 127, 127),
-			strokeWidth: 1,
+			style: {
+				strokeColor: new Color(127, 127, 127),
+				strokeWidth: 1,
+			},
 		});
 		await render();
 	});
@@ -57,14 +50,18 @@ init(canvas).then((layer) => {
 				line({
 					startPoint: new Point(x, 0),
 					endPoint: new Point(x, canvas.height),
-					strokeColor: new Color(65, 105, 225),
-					strokeWidth: 1,
+					style: {
+						strokeColor: new Color(65, 105, 225),
+						strokeWidth: 1,
+					},
 				}),
 				line({
 					startPoint: new Point(0, y),
 					endPoint: new Point(canvas.width, y),
-					strokeColor: new Color(65, 105, 225),
-					strokeWidth: 1,
+					style: {
+						strokeColor: new Color(65, 105, 225),
+						strokeWidth: 1,
+					},
 				}),
 			]);
 
@@ -79,6 +76,65 @@ init(canvas).then((layer) => {
 You can [play with it on StackBlitz](https://stackblitz.com/edit/framebuffer-worker?file=src/main.ts&view=editor).
 Open the preview in a new tab because the vite config changes the headers. See bellow.
 
+## Basic
+
+## Clear
+
+Calling `await clear();` will simply fill the `SharedArrayBuffer` with `OxO`.
+It is way faster than "drawing" all pixels one by one with a transparent color.
+
+## Render
+
+Call `await render();` everytime you want the pixels to appear on the screen.
+It will merge all layers together, by the order of creation. Last layer on top.
+
+## Primitives
+
+You can render all primitives together by using `await Promise.all([..]);`.
+It will do the rendering in one go (wasm is not yet multi-threaded) but it will probably not respect the order of drawing.
+
+### Line
+
+```javascript
+await line({
+	startPoint: new Point(i, 0),
+	endPoint: new Point(canvas.width, canvas.height),
+	style: {
+		// fillColor is not used for lines
+		strokeColor: new Color(255, 105, 180),
+		strokeWidth: 1,
+	},
+});
+```
+
+### Circle
+
+```javascript
+await circle({
+	topLeftPoint: new Point(10, 20),
+	diameter: 20,
+	style: {
+		fillColor: new Color(176, 230, 156),
+		strokeColor: new Color(255, 105, 180),
+		strokeWidth: 2,
+	},
+});
+```
+
+### Rectangle
+
+```javascript
+await rectangle({
+	topLeftPoint: new Point(50, 100),
+	size: new Size(100, 40),
+	style: {
+		fillColor: new Color(176, 230, 156),
+		strokeColor: new Color(255, 105, 180),
+		strokeWidth: 1,
+	},
+});
+```
+
 ## Layers
 
 Everytime you create a new layer, it will instantiate a new Worker. Every layer has to be _rendered individually_, though.
@@ -88,7 +144,18 @@ At every render the layers are merged together, in the order of creation at the 
 Currently, the rendering is not optimized if you have multiple real-time layers, because every render call its own `requestAnimationFrame` and merge layers together.
 Opacity is not supported at the moment.
 
-## Vite configuration
+## Server configuration
+
+### SharedArrayBuffer support
+
+You need to set two HTTP Headers:
+
+| Header                       | Value        |
+| ---------------------------- | ------------ |
+| Cross-Origin-Opener-Policy   | same-origin  |
+| Cross-Origin-Embedder-Policy | require-corp |
+
+### Vite
 
 You need to configure `vite` to build to ES modules.
 You also need to exclude the `framebuffer-worker` module from the dependency pre-bundling as this module is an ES module

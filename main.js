@@ -1,4 +1,5 @@
 import { init, asyncThrottle, Point, Color } from "./lib/index.js";
+import { Size } from "./lib/objects.js";
 
 // Animate the loading spinner via JavaScript to see if the main thread is not blocked.
 const loading = document.getElementById("loading");
@@ -20,41 +21,42 @@ requestAnimationFrame(animate);
 const canvas = document.getElementById("canvas");
 
 init(canvas).then((layer) => {
-	layer().then(async ({ clear, render, line, circle }) => {
+	layer().then(async ({ clear, render, line, circle, rectangle }) => {
 		const draw = async (i = 0) => {
 			await line({
 				startPoint: new Point(i, 0),
 				endPoint: new Point(canvas.width, canvas.height),
-				strokeColor: new Color(255, 105, 180),
-				strokeWidth: 1,
-			});
-			await line({
-				startPoint: new Point(10 + i, 60),
-				endPoint: new Point(30, 40),
-				strokeColor: new Color(255, 105, 180),
-				strokeWidth: 7,
-			});
-			await line({
-				startPoint: new Point(50 + i, 110),
-				endPoint: new Point(270, 40),
-				strokeColor: new Color(255, 105, 180),
-				strokeWidth: 3,
+				style: {
+					strokeColor: new Color(255, 105, 180),
+					strokeWidth: 1,
+				},
 			});
 			await circle({
-				topLeftPoint: new Point(10, 10),
+				topLeftPoint: new Point(10, 20),
 				diameter: 20,
-				fillColor: new Color(176, 230, 156),
-				strokeColor: new Color(255, 105, 180),
-				strokeWidth: 2,
+				style: {
+					fillColor: new Color(176, 230, 156),
+					strokeColor: new Color(255, 105, 180),
+					strokeWidth: 2,
+				},
+			});
+			await rectangle({
+				topLeftPoint: new Point(50, 100),
+				size: new Size(100, 40),
+				style: {
+					// fillColor: new Color(176, 230, 156),
+					strokeColor: new Color(255, 105, 180),
+					strokeWidth: 1,
+				},
 			});
 		};
 
 		const cb = async (event) => {
 			const random = Math.floor(Math.random() * 25);
 			await clear();
-			for (let i = random; i < 1000 + random; i++) {
-				await draw(i);
-			}
+			// for (let i = random; i < 1000 + random; i++) {
+			await draw();
+			// }
 			await render();
 		};
 
@@ -72,14 +74,18 @@ init(canvas).then((layer) => {
 				line({
 					startPoint: new Point(x, 0),
 					endPoint: new Point(x, canvas.height),
-					strokeColor: new Color(65, 105, 225),
-					strokeWidth: 1,
+					style: {
+						strokeColor: new Color(65, 105, 225),
+						strokeWidth: 1,
+					},
 				}),
 				line({
 					startPoint: new Point(0, y),
 					endPoint: new Point(canvas.width, y),
-					strokeColor: new Color(65, 105, 225),
-					strokeWidth: 1,
+					style: {
+						strokeColor: new Color(65, 105, 225),
+						strokeWidth: 1,
+					},
 				}),
 			]);
 
