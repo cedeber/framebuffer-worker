@@ -2,6 +2,8 @@
 	"name": "framebuffer-worker",
 	"version": "1.0.0-beta.7",
 	"description": "Draw on a Canvas from a Web Worker",
+	"browser": "./lib/index.js",
+	"types": "./lib/index.d.ts",
 	"exports": {
 		".": {
 			"types": "./lib/index.d.ts",
