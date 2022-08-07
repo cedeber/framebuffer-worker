@@ -21,7 +21,7 @@ That's why everything is _asynchronous_.
 ## Example
 
 ```javascript
-import { init, asyncThrottle, Color, Point } from "framebuffer-worker";
+import { init, asyncThrottle, Style, Color, Point } from "framebuffer-worker";
 
 const canvas = document.getElementById("canvas");
 
@@ -31,10 +31,7 @@ init(canvas).then((layer) => {
 		await line({
 			startPoint: new Point(0, 0),
 			endPoint: new Point(canvas.width, canvas.height),
-			style: {
-				strokeColor: new Color(127, 127, 127),
-				strokeWidth: 1,
-			},
+			style: new Style(undefined, new Color(127, 127, 127), 1),
 		});
 		await render();
 	});
@@ -50,18 +47,12 @@ init(canvas).then((layer) => {
 				line({
 					startPoint: new Point(x, 0),
 					endPoint: new Point(x, canvas.height),
-					style: {
-						strokeColor: new Color(65, 105, 225),
-						strokeWidth: 1,
-					},
+					style: new Style(undefined, new Color(65, 105, 225), 1),
 				}),
 				line({
 					startPoint: new Point(0, y),
 					endPoint: new Point(canvas.width, y),
-					style: {
-						strokeColor: new Color(65, 105, 225),
-						strokeWidth: 1,
-					},
+					style: new Style(undefined, new Color(65, 105, 225), 1),
 				}),
 			]);
 
@@ -78,7 +69,7 @@ Open the preview in a new tab because the vite config changes the headers. See b
 
 ## Basics
 
-## Layers
+### Layers
 
 Every time you create a new layer, it will instantiate a new Worker. Every layer has to be _rendered individually_, though.
 So the time that every layer will take to render, will never affect the other layers rendering speed.
@@ -101,15 +92,18 @@ init(canvas).then((layer) => {
 });
 ```
 
-## Clear
+### Clear
 
 Calling `await clear();` will simply fill the `SharedArrayBuffer` with `OxO`.
-It is way faster than "drawing" all pixels one by one with a transparent color.
+It is way faster than "drawing" all pixels one by one with a specific color.
+Colors are defined as `(red, green, blue, alpha)`. So here it will be a transparent black.
 
-## Render
+### Render
 
 Call `await render();` every time you want the pixels to appear on the screen.
 It will merge all layers together, by the order of creation. Last layer on top.
+
+Although at every drawings (`clear`, `line`, ...), the buffer is modified, we keep a copy of the previous one to draw it, until you call render.
 
 ## Primitives
 
@@ -122,11 +116,8 @@ It will do the rendering in one go (wasm is not yet multi-threaded) but it will 
 await line({
 	startPoint: new Point(i, 0),
 	endPoint: new Point(canvas.width, canvas.height),
-	style: {
-		// fillColor is not used for lines
-		strokeColor: new Color(255, 105, 180),
-		strokeWidth: 1,
-	},
+	// no fillColor for the line
+	style: new Style(undefined, new Color(255, 105, 180), 1),
 });
 ```
 
@@ -136,11 +127,7 @@ await line({
 await circle({
 	topLeftPoint: new Point(10, 20),
 	diameter: 20,
-	style: {
-		fillColor: new Color(176, 230, 156),
-		strokeColor: new Color(255, 105, 180),
-		strokeWidth: 2,
-	},
+	style: new Style(new Color(176, 230, 156), new Color(255, 105, 180), 2),
 });
 ```
 
@@ -150,11 +137,7 @@ await circle({
 await rectangle({
 	topLeftPoint: new Point(50, 100),
 	size: new Size(100, 40),
-	style: {
-		fillColor: new Color(176, 230, 156),
-		strokeColor: new Color(255, 105, 180),
-		strokeWidth: 1,
-	},
+	style: new Style(new Color(176, 230, 156), new Color(255, 105, 180), 1),
 });
 ```
 
