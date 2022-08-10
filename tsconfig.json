@@ -8,7 +8,7 @@
 		"lib": ["DOM", "DOM.Iterable", "ESNext", "WebWorker"],
 		"module": "ESNext",
 		"moduleResolution": "Node16",
-		"removeComments": true,
+		"removeComments": false,
 		"resolveJsonModule": true,
 		"skipLibCheck": true,
 		"strict": true,
