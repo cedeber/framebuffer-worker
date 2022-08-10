@@ -1,4 +1,5 @@
-import { init, asyncThrottle, Point, Color, Size, Style } from "./lib/index.js";
+import { init, asyncThrottle, Point, Color, Size, Style, TextStyle } from "./lib/index.js";
+import { Alignment, Baseline } from "./lib/objects.js";
 
 // Animate the loading spinner via JavaScript to see if the main thread is not blocked.
 const loading = document.getElementById("loading");
@@ -65,10 +66,11 @@ layer().then(async ({ clear, render, line, text }) => {
 
 		await Promise.all([
 			await text({
-				position: new Point(x + 3, y - 3),
+				position: new Point(x, y),
 				label: `${x.toFixed()}-${y.toFixed()}`,
 				size: 9,
 				textColor: new Color(33, 33, 33),
+				textStyle: new TextStyle(Alignment.Center, Baseline.Middle),
 			}),
 			line({
 				startPoint: new Point(x, 0),

@@ -142,6 +142,7 @@ impl Drawing {
 		label: &str,
 		size: u8,
 		text_color: objects::Color,
+		text_style: Option<objects::TextStyle>,
 	) {
 		let font = match size {
 			u8::MIN..=7 => PROFONT_7_POINT,
@@ -153,9 +154,13 @@ impl Drawing {
 			19..=u8::MAX => PROFONT_24_POINT,
 		};
 
-		let text_style: MonoTextStyle<Rgb888> = MonoTextStyle::new(&font, text_color.into());
-		Text::new(label, position.into(), text_style)
-			.draw(&mut self.display)
-			.unwrap();
+		let character_style: MonoTextStyle<Rgb888> = MonoTextStyle::new(&font, text_color.into());
+		let text = if let Some(style) = text_style {
+			Text::with_text_style(label, position.into(), character_style, style.into())
+		} else {
+			Text::new(label, position.into(), character_style)
+		};
+
+		text.draw(&mut self.display).unwrap();
 	}
 }

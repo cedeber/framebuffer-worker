@@ -1,5 +1,5 @@
 import { Color, Point } from "./index.js";
-import { AppEvents, Size, Style } from "./objects.js";
+import { AppEvents, Size, Style, TextStyle } from "./objects.js";
 
 interface WorkerApi<T> {
 	id: string;
@@ -33,6 +33,7 @@ interface TextArguments {
 	label: string;
 	size: 7 | 9 | 10 | 12 | 14 | 18 | 24;
 	textColor: Color;
+	textStyle?: TextStyle;
 }
 
 /** => Has to fake the Rust API */

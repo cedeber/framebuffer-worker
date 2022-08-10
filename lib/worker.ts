@@ -5,12 +5,13 @@ import type {
 	RectangleArguments,
 	TextArguments,
 } from "./types.js";
-import init, { Color, Drawing, Point, Size, Style } from "./wasm/canvas.js";
+import init, { Color, Drawing, Point, Size, Style, TextStyle } from "./wasm/canvas.js";
 import type {
 	Point as JsPoint,
 	Color as JsColor,
 	Style as JsStyle,
 	Size as JsSize,
+	TextStyle as JsTextStyle,
 } from "./objects.js";
 import { AppEvents } from "./objects.js";
 
@@ -26,6 +27,8 @@ const toColor = (color?: JsColor) =>
 const toSize = (size: JsSize) => new Size(size.width, size.height);
 const toStyle = (style: JsStyle) =>
 	new Style(toColor(style.fillColor), toColor(style.strokeColor), style.strokeWidth);
+const toTextStyle = (style?: JsTextStyle) =>
+	style ? new TextStyle(style.alignment, style.baseline) : undefined;
 
 (init as any)().then(() => {
 	let drawing: Drawing;
@@ -33,31 +36,45 @@ const toStyle = (style: JsStyle) =>
 	self.addEventListener(
 		"message",
 		({ data: { id, event, data } }: MessageEvent<WorkerApi<any>>) => {
+			// Setup
 			if (event === AppEvents.Start) {
 				// Receive the Shared Array Buffer from the main thread
 				drawing = new Drawing(data.sab, data.width, data.height);
 				// Allow to draw now :-D
 				self.postMessage({ event: AppEvents.Go });
-			} else if (event === AppEvents.Clear) {
+				return;
+			}
+
+			// Drawing
+			if (event === AppEvents.Clear) {
 				drawing.clear();
-				done(id);
 			} else if (event === AppEvents.Line) {
 				const { startPoint, endPoint, style } = <LineArguments>data;
 				drawing.line(toPoint(startPoint), toPoint(endPoint), toStyle(style));
-				done(id);
 			} else if (event === AppEvents.Circle) {
 				const { topLeftPoint, diameter, style } = <CircleArguments>data;
 				drawing.circle(toPoint(topLeftPoint), diameter, toStyle(style));
-				done(id);
 			} else if (event === AppEvents.Rectangle) {
 				const { topLeftPoint, size, style } = <RectangleArguments>data;
 				drawing.rectangle(toPoint(topLeftPoint), toSize(size), toStyle(style));
-				done(id);
 			} else if (event === AppEvents.Text) {
-				const { position: topLeftPoint, label, size, textColor } = <TextArguments>data;
-				drawing.text(toPoint(topLeftPoint), label, size, toColor(textColor)!);
-				done(id);
+				const {
+					position: topLeftPoint,
+					label,
+					size,
+					textColor,
+					textStyle,
+				} = <TextArguments>data;
+				drawing.text(
+					toPoint(topLeftPoint),
+					label,
+					size,
+					toColor(textColor)!,
+					toTextStyle(textStyle),
+				);
 			}
+
+			done(id);
 		},
 	);
 

@@ -6,8 +6,8 @@ import type {
 	TextArguments,
 	WorkerApi,
 } from "./types.js";
-import {mergeImage, uid} from "./utils.js";
-import {AppEvents} from "./objects.js";
+import { mergeImage, uid } from "./utils.js";
+import { AppEvents } from "./objects.js";
 
 // Not sure if this is optimized!
 const post = <T>(worker: Worker, event: string, data?: T): Promise<void> => {
@@ -98,4 +98,4 @@ const start = (canvas: HTMLCanvasElement): (() => Promise<DrawingApi>) => {
 
 export { start as init };
 export { asyncThrottle } from "./utils.js";
-export { Color, Point, Size, Style } from "./objects.js";
+export { Color, Point, Size, Style, TextStyle } from "./objects.js";

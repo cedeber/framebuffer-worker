@@ -55,4 +55,23 @@ class Size {
 	constructor(public width: number, public height: number) {}
 }
 
-export { AppEvents, Style, Color, Point, Size };
+const enum Alignment {
+	/** default */
+	Left = "left",
+	Center = "center",
+	Right = "right",
+}
+
+const enum Baseline {
+	Top = "top",
+	Bottom = "bottom",
+	Middle = "middle",
+	/** default */
+	Alphabetic = "alphabetic",
+}
+
+class TextStyle {
+	constructor(public alignment?: Alignment, public baseline?: Baseline) {}
+}
+
+export { AppEvents, Style, Color, Point, Size, Alignment, Baseline, TextStyle };
