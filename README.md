@@ -139,6 +139,25 @@ await rectangle({
 });
 ```
 
+### Text
+
+Only a single monospaced font is available: [ProFont](https://tobiasjung.name/profont/).
+There is no italic nor bold version. But the bigger the font, the bolder.
+
+Only few sizes are available: 7, 9, 10, 12, 14, 18, and 24 pixels. You can see the rendering on the [GitHub page](https://github.com/wezm/profont).
+
+The `textStyle` argument is _not mandatory_. The default alignment is `left` and the default baseline is `alphabetic`.
+
+```javascript
+await text({
+	position: new Point(20, 20),
+	label: `Hello, world!`,
+	size: 9,
+	textColor: new Color(33, 33, 33),
+	textStyle: new TextStyle(Alignment.Center, Baseline.Middle),
+});
+```
+
 ## Server configuration
 
 ### SharedArrayBuffer support
