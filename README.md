@@ -24,43 +24,42 @@ That's why everything is _asynchronous_.
 import { init, asyncThrottle, Style, Color, Point } from "framebuffer-worker";
 
 const canvas = document.getElementById("canvas");
+const layer = init(canvas);
 
-init(canvas).then((layer) => {
-	layer().then(async ({ clear, render, line }) => {
+layer().then(async ({ clear, render, line }) => {
+	await clear();
+	await line({
+		startPoint: new Point(0, 0),
+		endPoint: new Point(canvas.width, canvas.height),
+		style: new Style(undefined, new Color(127, 127, 127), 1),
+	});
+	await render();
+});
+
+layer().then(async ({ clear, render, line }) => {
+	const cb = async (event) => {
+		const x = event.offsetX;
+		const y = event.offsetY;
+
 		await clear();
-		await line({
-			startPoint: new Point(0, 0),
-			endPoint: new Point(canvas.width, canvas.height),
-			style: new Style(undefined, new Color(127, 127, 127), 1),
-		});
+
+		await Promise.all([
+			line({
+				startPoint: new Point(x, 0),
+				endPoint: new Point(x, canvas.height),
+				style: new Style(undefined, new Color(65, 105, 225), 1),
+			}),
+			line({
+				startPoint: new Point(0, y),
+				endPoint: new Point(canvas.width, y),
+				style: new Style(undefined, new Color(65, 105, 225), 1),
+			}),
+		]);
+
 		await render();
-	});
+	};
 
-	layer().then(async ({ clear, render, line }) => {
-		const cb = async (event) => {
-			const x = event.offsetX;
-			const y = event.offsetY;
-
-			await clear();
-
-			await Promise.all([
-				line({
-					startPoint: new Point(x, 0),
-					endPoint: new Point(x, canvas.height),
-					style: new Style(undefined, new Color(65, 105, 225), 1),
-				}),
-				line({
-					startPoint: new Point(0, y),
-					endPoint: new Point(canvas.width, y),
-					style: new Style(undefined, new Color(65, 105, 225), 1),
-				}),
-			]);
-
-			await render();
-		};
-
-		canvas.addEventListener("pointermove", asyncThrottle(cb, 16));
-	});
+	canvas.addEventListener("pointermove", asyncThrottle(cb, 16));
 });
 ```
 
@@ -80,16 +79,15 @@ Opacity is not supported at the moment.
 
 ```javascript
 const canvas = document.getElementById("canvas");
+const layer = init(canvas);
 
-init(canvas).then((layer) => {
-	layer().then(async ({ clear, render, line, circle, rectangle }) => {
-		// -- snip --
-	});
-
-	layer().then(async ({ clear, render, line, circle, rectangle }) => {
-		// -- snip --
-	});
+layer().then(async ({ clear, render, line, circle, rectangle }) => {
+	// -- snip --
 });
+
+// OR
+
+const { clear, render, line, circle, rectangle } = await layer();
 ```
 
 ### Clear

@@ -1,9 +1,9 @@
 import { Point } from "./index.js";
-import { Size, Style } from "./objects.js";
+import { AppEvents, Size, Style } from "./objects.js";
 
 interface WorkerApi<T> {
 	id: string;
-	event: string;
+	event: AppEvents;
 	data?: T;
 }
 

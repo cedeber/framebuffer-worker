@@ -1,18 +1,13 @@
-import type {
-	CircleArguments,
-	DrawingApi,
-	LineArguments,
-	RectangleArguments,
-	WorkerApi,
-} from "./types.js";
-import { mergeImage, uid } from "./utils.js";
+import type {CircleArguments, DrawingApi, LineArguments, RectangleArguments, WorkerApi,} from "./types.js";
+import {mergeImage, uid} from "./utils.js";
+import {AppEvents} from "./objects.js";
 
 // Not sure if this is optimized!
-const post = <T>(worker: Worker, event: string, data?: T) => {
+const post = <T>(worker: Worker, event: string, data?: T): Promise<void> => {
 	const id = uid();
 	return new Promise<void>((resolve) => {
 		const cb = ({ data }: MessageEvent<WorkerApi<T>>) => {
-			if (data.event === "done" && data.id === id) {
+			if (data.event === AppEvents.Done && data.id === id) {
 				resolve();
 				worker.removeEventListener("message", cb);
 			}
@@ -22,12 +17,13 @@ const post = <T>(worker: Worker, event: string, data?: T) => {
 	});
 };
 
-const start = async (canvas: HTMLCanvasElement): Promise<() => Promise<DrawingApi>> => {
+const start = (canvas: HTMLCanvasElement): (() => Promise<DrawingApi>) => {
 	// TODO: screen pixel density, aka Retina Display for instance (probably only integer)
 	const ctx = canvas.getContext("2d")!;
 	const WIDTH = canvas.width;
 	const HEIGHT = canvas.height;
 
+	// TODO We should avoid keeping a copy of the layer buffer as long as we only have one
 	const layers: Map<string, Uint8ClampedArray> = new Map();
 	const layersOrder: string[] = [];
 
@@ -36,10 +32,10 @@ const start = async (canvas: HTMLCanvasElement): Promise<() => Promise<DrawingAp
 		layersOrder.push(id);
 
 		return {
-			clear: () => post(worker, "clear"),
-			line: (args) => post<LineArguments>(worker, "line", args),
-			circle: (args) => post<CircleArguments>(worker, "circle", args),
-			rectangle: (args) => post<RectangleArguments>(worker, "rectangle", args),
+			clear: () => post(worker, AppEvents.Clear),
+			line: (args) => post<LineArguments>(worker, AppEvents.Line, args),
+			circle: (args) => post<CircleArguments>(worker, AppEvents.Circle, args),
+			rectangle: (args) => post<RectangleArguments>(worker, AppEvents.Rectangle, args),
 			render: () => {
 				return new Promise((resolve) => {
 					requestAnimationFrame(() => {
@@ -76,12 +72,12 @@ const start = async (canvas: HTMLCanvasElement): Promise<() => Promise<DrawingAp
 			worker.addEventListener(
 				"message",
 				({ data: { event } }: MessageEvent<WorkerApi<void>>) => {
-					if (event === "ready") {
+					if (event === AppEvents.Ready) {
 						worker.postMessage({
-							event: "start",
+							event: AppEvents.Start,
 							data: { sab: sharedArrayBuffer, width: WIDTH, height: HEIGHT },
 						});
-					} else if (event === "go") {
+					} else if (event === AppEvents.Go) {
 						// Allow to draw now :-D
 						resolve(api);
 					}

@@ -6,6 +6,7 @@ import type {
 	Style as JsStyle,
 	Size as JsSize,
 } from "./objects.js";
+import { AppEvents } from "./objects.js";
 
 // TODO pass `self` to Wasm in order to `self.postMessage({ event: "reload" })`?
 
@@ -26,23 +27,23 @@ const toStyle = (style: JsStyle) =>
 	self.addEventListener(
 		"message",
 		({ data: { id, event, data } }: MessageEvent<WorkerApi<any>>) => {
-			if (event === "start") {
+			if (event === AppEvents.Start) {
 				// Receive the Shared Array Buffer from the main thread
 				drawing = new Drawing(data.sab, data.width, data.height);
 				// Allow to draw now :-D
-				self.postMessage({ event: "go" });
-			} else if (event === "clear") {
+				self.postMessage({ event: AppEvents.Go });
+			} else if (event === AppEvents.Clear) {
 				drawing.clear();
 				done(id);
-			} else if (event === "line") {
+			} else if (event === AppEvents.Line) {
 				const { startPoint, endPoint, style } = <LineArguments>data;
 				drawing.line(toPoint(startPoint), toPoint(endPoint), toStyle(style));
 				done(id);
-			} else if (event === "circle") {
+			} else if (event === AppEvents.Circle) {
 				const { topLeftPoint, diameter, style } = <CircleArguments>data;
 				drawing.circle(toPoint(topLeftPoint), diameter, toStyle(style));
 				done(id);
-			} else if (event === "rectangle") {
+			} else if (event === AppEvents.Rectangle) {
 				const { topLeftPoint, size, style } = <RectangleArguments>data;
 				drawing.rectangle(toPoint(topLeftPoint), toSize(size), toStyle(style));
 				done(id);
