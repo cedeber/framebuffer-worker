@@ -1,11 +1,17 @@
 mod objects;
 
 use embedded_graphics::{
+	mono_font::MonoTextStyle,
 	pixelcolor::Rgb888,
 	prelude::*,
 	primitives::{Circle, Line, Rectangle},
+	text::Text,
 };
 use js_sys::{SharedArrayBuffer, Uint8ClampedArray};
+use profont::{
+	PROFONT_10_POINT, PROFONT_12_POINT, PROFONT_14_POINT, PROFONT_18_POINT, PROFONT_24_POINT,
+	PROFONT_7_POINT, PROFONT_9_POINT,
+};
 use wasm_bindgen::prelude::*;
 
 #[global_allocator]
@@ -125,6 +131,30 @@ impl Drawing {
 	) {
 		Rectangle::new(top_left_point.into(), size.into())
 			.into_styled(style.into())
+			.draw(&mut self.display)
+			.unwrap();
+	}
+
+	#[wasm_bindgen]
+	pub fn text(
+		&mut self,
+		position: objects::Point,
+		label: &str,
+		size: u8,
+		text_color: objects::Color,
+	) {
+		let font = match size {
+			u8::MIN..=7 => PROFONT_7_POINT,
+			8..=9 => PROFONT_9_POINT,
+			10 => PROFONT_10_POINT,
+			11..=12 => PROFONT_12_POINT,
+			13..=14 => PROFONT_14_POINT,
+			15..=18 => PROFONT_18_POINT,
+			19..=u8::MAX => PROFONT_24_POINT,
+		};
+
+		let text_style: MonoTextStyle<Rgb888> = MonoTextStyle::new(&font, text_color.into());
+		Text::new(label, position.into(), text_style)
 			.draw(&mut self.display)
 			.unwrap();
 	}

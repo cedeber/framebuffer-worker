@@ -56,7 +56,7 @@ layer().then(async ({ clear, render, line, circle, rectangle }) => {
 	setInterval(asyncThrottle(cb), 16);
 });
 
-layer().then(async ({ clear, render, line, circle }) => {
+layer().then(async ({ clear, render, line, text }) => {
 	const cb = async (event) => {
 		const x = event.offsetX;
 		const y = event.offsetY;
@@ -64,6 +64,12 @@ layer().then(async ({ clear, render, line, circle }) => {
 		await clear();
 
 		await Promise.all([
+			await text({
+				position: new Point(x + 3, y - 3),
+				label: `${x.toFixed()}-${y.toFixed()}`,
+				size: 9,
+				textColor: new Color(33, 33, 33),
+			}),
 			line({
 				startPoint: new Point(x, 0),
 				endPoint: new Point(x, canvas.height),

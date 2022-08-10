@@ -13,6 +13,7 @@ const enum AppEvents {
 	Line = "line",
 	Circle = "circle",
 	Rectangle = "rectangle",
+	Text = "text",
 
 	/** A drawing is done */
 	Done = "done",

@@ -1,4 +1,4 @@
-import { Point } from "./index.js";
+import { Color, Point } from "./index.js";
 import { AppEvents, Size, Style } from "./objects.js";
 
 interface WorkerApi<T> {
@@ -28,6 +28,13 @@ interface RectangleArguments {
 	style: Style;
 }
 
+interface TextArguments {
+	position: Point;
+	label: string;
+	size: 7 | 9 | 10 | 12 | 14 | 18 | 24;
+	textColor: Color;
+}
+
 /** => Has to fake the Rust API */
 interface DrawingApi {
 	/** Fill the whole framebuffer with `0x0` */
@@ -37,6 +44,14 @@ interface DrawingApi {
 	line(args: LineArguments): Promise<void>;
 	circle(args: CircleArguments): Promise<void>;
 	rectangle(args: RectangleArguments): Promise<void>;
+	text(args: TextArguments): Promise<void>;
 }
 
-export type { WorkerApi, DrawingApi, LineArguments, CircleArguments, RectangleArguments };
+export type {
+	WorkerApi,
+	DrawingApi,
+	LineArguments,
+	CircleArguments,
+	RectangleArguments,
+	TextArguments,
+};

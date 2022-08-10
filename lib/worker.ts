@@ -1,4 +1,10 @@
-import type { WorkerApi, LineArguments, CircleArguments, RectangleArguments } from "./types.js";
+import type {
+	WorkerApi,
+	LineArguments,
+	CircleArguments,
+	RectangleArguments,
+	TextArguments,
+} from "./types.js";
 import init, { Color, Drawing, Point, Size, Style } from "./wasm/canvas.js";
 import type {
 	Point as JsPoint,
@@ -11,7 +17,7 @@ import { AppEvents } from "./objects.js";
 // TODO pass `self` to Wasm in order to `self.postMessage({ event: "reload" })`?
 
 const done = (id: string) => {
-	self.postMessage({ id, event: "done" });
+	self.postMessage({ id, event: AppEvents.Done });
 };
 
 const toPoint = (point: JsPoint) => new Point(point.x, point.y);
@@ -47,10 +53,14 @@ const toStyle = (style: JsStyle) =>
 				const { topLeftPoint, size, style } = <RectangleArguments>data;
 				drawing.rectangle(toPoint(topLeftPoint), toSize(size), toStyle(style));
 				done(id);
+			} else if (event === AppEvents.Text) {
+				const { position: topLeftPoint, label, size, textColor } = <TextArguments>data;
+				drawing.text(toPoint(topLeftPoint), label, size, toColor(textColor)!);
+				done(id);
 			}
 		},
 	);
 
 	// Wasm is instantiated
-	self.postMessage({ event: "ready" });
+	self.postMessage({ event: AppEvents.Ready });
 });

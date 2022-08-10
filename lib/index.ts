@@ -1,4 +1,11 @@
-import type {CircleArguments, DrawingApi, LineArguments, RectangleArguments, WorkerApi,} from "./types.js";
+import type {
+	CircleArguments,
+	DrawingApi,
+	LineArguments,
+	RectangleArguments,
+	TextArguments,
+	WorkerApi,
+} from "./types.js";
 import {mergeImage, uid} from "./utils.js";
 import {AppEvents} from "./objects.js";
 
@@ -36,6 +43,7 @@ const start = (canvas: HTMLCanvasElement): (() => Promise<DrawingApi>) => {
 			line: (args) => post<LineArguments>(worker, AppEvents.Line, args),
 			circle: (args) => post<CircleArguments>(worker, AppEvents.Circle, args),
 			rectangle: (args) => post<RectangleArguments>(worker, AppEvents.Rectangle, args),
+			text: (args) => post<TextArguments>(worker, AppEvents.Text, args),
 			render: () => {
 				return new Promise((resolve) => {
 					requestAnimationFrame(() => {
