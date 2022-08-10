@@ -10,7 +10,7 @@ import { mergeImage, uid } from "./utils.js";
 import { AppEvents } from "./objects.js";
 
 // Not sure if this is optimized!
-const post = <T>(worker: Worker, event: string, data?: T): Promise<void> => {
+const post = <T>(worker: Worker, event: AppEvents, data?: T): Promise<void> => {
 	const id = uid();
 	return new Promise<void>((resolve) => {
 		const cb = ({ data }: MessageEvent<WorkerApi<T>>) => {
@@ -20,7 +20,9 @@ const post = <T>(worker: Worker, event: string, data?: T): Promise<void> => {
 			}
 		};
 		worker.addEventListener("message", cb);
-		worker.postMessage({ id, event, data });
+
+		const message: WorkerApi<T> = { id, event, data };
+		worker.postMessage(message);
 	});
 };
 
