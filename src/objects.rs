@@ -1,10 +1,11 @@
-use embedded_graphics::primitives::{PrimitiveStyle, PrimitiveStyleBuilder};
 use embedded_graphics::{
 	geometry::{Point as EgPoint, Size as EgSize},
 	pixelcolor::Rgb888,
+	primitives::{PrimitiveStyle, PrimitiveStyleBuilder},
 };
 use wasm_bindgen::prelude::*;
 
+#[derive(Copy, Clone)]
 #[wasm_bindgen]
 pub struct Style {
 	fill_color: Option<Color>,
@@ -48,6 +49,7 @@ impl From<Style> for PrimitiveStyle<Rgb888> {
 	}
 }
 
+#[derive(Copy, Clone)]
 #[wasm_bindgen]
 pub struct Color {
 	red: u8,
@@ -70,6 +72,7 @@ impl From<Color> for Rgb888 {
 	}
 }
 
+#[derive(Copy, Clone)]
 #[wasm_bindgen]
 pub struct Point {
 	x: i32,
@@ -90,6 +93,7 @@ impl From<Point> for EgPoint {
 	}
 }
 
+#[derive(Copy, Clone)]
 #[wasm_bindgen]
 pub struct Size {
 	width: u32,
