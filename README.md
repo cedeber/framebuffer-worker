@@ -101,18 +101,18 @@ Colors are defined as `(red, green, blue, alpha)`. So here it will be a transpar
 Call `await render();` every time you want the pixels to appear on the screen.
 It will merge all layers together, by the order of creation. Last layer on top.
 
-Although at every drawings (`clear`, `line`, ...), the buffer is modified, we keep a copy of the previous one to draw it, until you call render.
+Although at every drawings (`clear`, `line`, ...), the buffer is modified, we keep a copy of the previous one to draw it, until you call `render`.
 
 ## Primitives
 
 You can render all primitives together by using `await Promise.all([..]);`.
-It will do the rendering in one go (wasm is not yet multi-threaded) but it will probably not respect the order of drawing.
+It will do the rendering in one go (wasm is not yet multithreaded) but it will probably not respect the order of drawing.
 
 ### Line
 
 ```javascript
 await line({
-	startPoint: new Point(i, 0),
+	startPoint: new Point(0, 0),
 	endPoint: new Point(canvas.width, canvas.height),
 	// no fillColor for the line
 	style: new Style(undefined, new Color(255, 105, 180), 1),
@@ -146,7 +146,7 @@ There is no italic nor bold version. But the bigger the font, the bolder.
 
 Only few sizes are available: 7, 9, 10, 12, 14, 18, and 24 pixels. You can see the rendering on the [GitHub page](https://github.com/wezm/profont).
 
-The `textStyle` argument is _not mandatory_. The default alignment is `left` and the default baseline is `alphabetic`.
+The `textStyle` argument is _optional_. The default alignment is `left` and the default baseline is `alphabetic`.
 
 ```javascript
 await text({
