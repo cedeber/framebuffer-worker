@@ -15,15 +15,16 @@ import type {
 } from "./objects.js";
 import { AppEvents } from "./objects.js";
 
-// TODO pass `self` to Wasm in order to `self.postMessage({ event: "reload" })`?
+// TODO pass `ctx` to Wasm in order to `self.postMessage({ event: "reload" })`?
+const ctx = self as WorkerGlobalScope & typeof globalThis;
 
 const done = (id: string) => {
-	self.postMessage({ id, event: AppEvents.Done });
+	ctx.postMessage({ id, event: AppEvents.Done });
 };
 
 const toPoint = (point: JsPoint) => new Point(point.x, point.y);
 const toColor = (color?: JsColor) =>
-	color ? new Color(color.red, color.green, color.blue) : undefined;
+	color ? new Color(color.red, color.green, color.blue, 127) : undefined;
 const toSize = (size: JsSize) => new Size(size.width, size.height);
 const toStyle = (style: JsStyle) =>
 	new Style(toColor(style.fillColor), toColor(style.strokeColor), style.strokeWidth);
@@ -33,7 +34,7 @@ const toTextStyle = (style?: JsTextStyle) =>
 (init as any)().then(() => {
 	let drawing: Drawing;
 
-	self.addEventListener(
+	ctx.addEventListener(
 		"message",
 		({ data: { id, event, data } }: MessageEvent<WorkerApi<any>>) => {
 			// Setup
@@ -41,7 +42,7 @@ const toTextStyle = (style?: JsTextStyle) =>
 				// Receive the Shared Array Buffer from the main thread
 				drawing = new Drawing(data.sab, data.width, data.height);
 				// Allow to draw now :-D
-				self.postMessage({ event: AppEvents.Go });
+				ctx.postMessage({ event: AppEvents.Go });
 				return;
 			}
 
@@ -79,5 +80,5 @@ const toTextStyle = (style?: JsTextStyle) =>
 	);
 
 	// Wasm is instantiated
-	self.postMessage({ event: AppEvents.Ready });
+	ctx.postMessage({ event: AppEvents.Ready });
 });
