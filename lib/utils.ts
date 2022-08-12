@@ -1,3 +1,5 @@
+import Color from "color";
+
 /**
  * Throttle a function but wait that the Promise is resolved before running the next one
  * @see https://underscorejs.org/docs/modules/throttle.html
@@ -28,7 +30,7 @@ function asyncThrottle(func: (...args: any[]) => Promise<unknown>, wait = 300) {
 			if (!timeout) argsList = null;
 		} else if (!timeout) {
 			isRunning = true;
-			timeout = setTimeout(async () => {
+			timeout = window.setTimeout(async () => {
 				previous = performance.now();
 				timeout = undefined;
 				result = await func.call(this, ...argsList);
