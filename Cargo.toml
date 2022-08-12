@@ -28,6 +28,8 @@ wee_alloc = "0.4.5"
 #serde_json = "1.0.82"
 embedded-graphics = "0.7.1"
 profont = "0.6.1"
+byteorder = "1.4.3"
+#palette = "0.6.1"
 
 [dependencies.web-sys]
 version = "0.3.58"

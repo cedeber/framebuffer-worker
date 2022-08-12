@@ -62,11 +62,11 @@ const mergeImage = (layers: Uint8ClampedArray[]): Uint8ClampedArray => {
 	for (let i = 0; i < length; i = i + 4) {
 		for (const layer of layers) {
 			const alpha = layer[i + 3];
-			if (alpha === 0xff) {
+			if (alpha !== 0x00) {
 				final[i] = layer[i];
 				final[i + 1] = layer[i + 1];
 				final[i + 2] = layer[i + 2];
-				final[i + 3] = 0xff;
+				final[i + 3] = layer[i + 3];
 			}
 		}
 	}

@@ -1,6 +1,6 @@
+use crate::ARGB;
 use embedded_graphics::{
 	geometry::{Point as EgPoint, Size as EgSize},
-	pixelcolor::Rgb888,
 	primitives::{PrimitiveStyle, PrimitiveStyleBuilder},
 	text::{Alignment, Baseline, TextStyle as EgTextStyle, TextStyleBuilder},
 };
@@ -30,9 +30,9 @@ impl Style {
 	}
 }
 
-impl From<Style> for PrimitiveStyle<Rgb888> {
+impl From<Style> for PrimitiveStyle<ARGB> {
 	fn from(style: Style) -> Self {
-		let mut _style: PrimitiveStyleBuilder<Rgb888> = PrimitiveStyleBuilder::new();
+		let mut _style: PrimitiveStyleBuilder<ARGB> = PrimitiveStyleBuilder::new();
 
 		if let Some(color) = style.fill_color {
 			_style = _style.fill_color(color.into());
@@ -111,20 +111,25 @@ pub struct Color {
 	red: u8,
 	green: u8,
 	blue: u8,
-	// alpha: u8,
+	alpha: u8,
 }
 
 #[wasm_bindgen]
 impl Color {
 	#[wasm_bindgen(constructor)]
-	pub fn new(red: u8, green: u8, blue: u8) -> Self {
-		Color { red, green, blue }
+	pub fn new(red: u8, green: u8, blue: u8, alpha: u8) -> Self {
+		Color {
+			red,
+			green,
+			blue,
+			alpha,
+		}
 	}
 }
 
-impl From<Color> for Rgb888 {
+impl From<Color> for ARGB {
 	fn from(color: Color) -> Self {
-		Rgb888::new(color.red, color.green, color.blue)
+		ARGB::new(color.red, color.green, color.blue, color.alpha)
 	}
 }
 

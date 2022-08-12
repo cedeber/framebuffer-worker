@@ -40,7 +40,7 @@ layer().then(async ({ clear, render, line, circle, rectangle }) => {
 		});
 		await rectangle({
 			topLeftPoint: new Point(50, 100),
-			size: new Size(100, 40),
+			size: new Size(300, 40),
 			style: new Style(undefined, new Color(255, 105, 180), 1),
 		});
 	};
@@ -66,17 +66,16 @@ layer().then(async ({ clear, render, line, text }) => {
 
 		await Promise.all([
 			await text({
-				position: new Point(x, y),
+				position: new Point(x + 3, y - 3),
 				label: `${x.toFixed()}-${y.toFixed()}`,
-				size: 9,
+				size: 12,
 				textColor: new Color(33, 33, 33),
-				textStyle: new TextStyle(Alignment.Center, Baseline.Middle),
 			}),
 			line({
 				startPoint: new Point(x, 0),
 				endPoint: new Point(x, canvas.height),
 				style: {
-					strokeColor: new Color(65, 105, 225),
+					strokeColor: new Color(65, 105, 225, 127),
 					strokeWidth: 1,
 				},
 			}),
@@ -84,7 +83,7 @@ layer().then(async ({ clear, render, line, text }) => {
 				startPoint: new Point(0, y),
 				endPoint: new Point(canvas.width, y),
 				style: {
-					strokeColor: new Color(65, 105, 225),
+					strokeColor: new Color(65, 105, 225, 127),
 					strokeWidth: 1,
 				},
 			}),

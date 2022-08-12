@@ -24,7 +24,7 @@ const done = (id: string) => {
 
 const toPoint = (point: JsPoint) => new Point(point.x, point.y);
 const toColor = (color?: JsColor) =>
-	color ? new Color(color.red, color.green, color.blue, 127) : undefined;
+	color ? new Color(color.red, color.green, color.blue, color.alpha ?? 0xff) : undefined;
 const toSize = (size: JsSize) => new Size(size.width, size.height);
 const toStyle = (style: JsStyle) =>
 	new Style(toColor(style.fillColor), toColor(style.strokeColor), style.strokeWidth);
