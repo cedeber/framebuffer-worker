@@ -11,9 +11,10 @@ export default defineConfig({
 			fileName: "framebuffer-worker",
 		},
 		sourcemap: true,
+		assetsInlineLimit: 0,
 	},
 	worker: {
 		format: "es",
 	},
-	plugins: [dts()],
+	plugins: [dts({ entryRoot: "lib" })],
 });
