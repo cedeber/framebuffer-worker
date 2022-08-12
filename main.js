@@ -1,5 +1,4 @@
-import { init, asyncThrottle, Point, Color, Size, Style, TextStyle } from "./lib/index.js";
-import { Alignment, Baseline } from "./lib/objects.js";
+import { init, asyncThrottle, Point, Color, Size, Style } from "./dist/framebuffer-worker.js";
 
 // Animate the loading spinner via JavaScript to see if the main thread is not blocked.
 const loading = document.getElementById("loading");

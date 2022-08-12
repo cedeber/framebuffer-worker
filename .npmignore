@@ -6,8 +6,7 @@
 /*config*
 *.md
 *-lock*
-/lib/*.ts
-!/lib/*.d.ts
+/lib/
 /Cargo.*
 *.html
 /*.js
