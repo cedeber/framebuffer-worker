@@ -1,5 +1,3 @@
-import Color from "color";
-
 /**
  * Throttle a function but wait that the Promise is resolved before running the next one
  * @see https://underscorejs.org/docs/modules/throttle.html
