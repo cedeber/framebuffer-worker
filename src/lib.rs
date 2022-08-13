@@ -1,10 +1,8 @@
 mod objects;
 
-use byteorder::{BigEndian, ReadBytesExt};
-use embedded_graphics::pixelcolor::raw::RawU32;
-use embedded_graphics::pixelcolor::Rgb888;
 use embedded_graphics::{
 	mono_font::MonoTextStyle,
+	pixelcolor::Rgb888,
 	prelude::*,
 	primitives::{Circle, Line, Rectangle},
 	text::Text,
