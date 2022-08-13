@@ -47,6 +47,7 @@ const start = (canvas: HTMLCanvasElement): (() => Promise<DrawingApi>) => {
 			rectangle: (args) => post<RectangleArguments>(worker, AppEvents.Rectangle, args),
 			text: (args) => post<TextArguments>(worker, AppEvents.Text, args),
 			render: () => {
+				// This MUST be very fast
 				return new Promise((resolve) => {
 					requestAnimationFrame(() => {
 						// Only copy the layer once ready
