@@ -74,7 +74,7 @@ layer().then(async ({ clear, render, line, text }) => {
 				startPoint: new Point(x, 0),
 				endPoint: new Point(x, canvas.height),
 				style: {
-					strokeColor: new Color(65, 105, 225, 127),
+					strokeColor: new Color(65, 105, 225),
 					strokeWidth: 1,
 				},
 			}),
@@ -82,7 +82,7 @@ layer().then(async ({ clear, render, line, text }) => {
 				startPoint: new Point(0, y),
 				endPoint: new Point(canvas.width, y),
 				style: {
-					strokeColor: new Color(65, 105, 225, 127),
+					strokeColor: new Color(65, 105, 225),
 					strokeWidth: 1,
 				},
 			}),

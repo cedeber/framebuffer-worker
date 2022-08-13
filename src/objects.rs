@@ -1,4 +1,4 @@
-use crate::ARGB;
+use embedded_graphics::pixelcolor::Rgb888;
 use embedded_graphics::{
 	geometry::{Point as EgPoint, Size as EgSize},
 	primitives::{PrimitiveStyle, PrimitiveStyleBuilder},
@@ -30,9 +30,9 @@ impl Style {
 	}
 }
 
-impl From<Style> for PrimitiveStyle<ARGB> {
+impl From<Style> for PrimitiveStyle<Rgb888> {
 	fn from(style: Style) -> Self {
-		let mut _style: PrimitiveStyleBuilder<ARGB> = PrimitiveStyleBuilder::new();
+		let mut _style: PrimitiveStyleBuilder<Rgb888> = PrimitiveStyleBuilder::new();
 
 		if let Some(color) = style.fill_color {
 			_style = _style.fill_color(color.into());
@@ -111,25 +111,19 @@ pub struct Color {
 	red: u8,
 	green: u8,
 	blue: u8,
-	alpha: u8,
 }
 
 #[wasm_bindgen]
 impl Color {
 	#[wasm_bindgen(constructor)]
-	pub fn new(red: u8, green: u8, blue: u8, alpha: u8) -> Self {
-		Color {
-			red,
-			green,
-			blue,
-			alpha,
-		}
+	pub fn new(red: u8, green: u8, blue: u8) -> Self {
+		Color { red, green, blue }
 	}
 }
 
-impl From<Color> for ARGB {
+impl From<Color> for Rgb888 {
 	fn from(color: Color) -> Self {
-		ARGB::new(color.red, color.green, color.blue, color.alpha)
+		Rgb888::new(color.red, color.green, color.blue)
 	}
 }
 

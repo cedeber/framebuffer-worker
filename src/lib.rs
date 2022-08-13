@@ -2,6 +2,7 @@ mod objects;
 
 use byteorder::{BigEndian, ReadBytesExt};
 use embedded_graphics::pixelcolor::raw::RawU32;
+use embedded_graphics::pixelcolor::Rgb888;
 use embedded_graphics::{
 	mono_font::MonoTextStyle,
 	prelude::*,
@@ -24,43 +25,6 @@ pub fn main_wasm() -> Result<(), JsValue> {
 	Ok(())
 }
 
-#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug, Default)]
-pub struct ARGB(RawU32);
-
-impl ARGB {
-	pub fn new(red: u8, green: u8, blue: u8, alpha: u8) -> Self {
-		let mut buf: &[u8] = &[alpha, red, green, blue];
-		let num = buf.read_u32::<BigEndian>().unwrap();
-		Self(RawU32::new(num))
-	}
-
-	pub fn r(&self) -> u8 {
-		self.0.to_be_bytes()[1]
-	}
-
-	pub fn g(&self) -> u8 {
-		self.0.to_be_bytes()[2]
-	}
-
-	pub fn b(&self) -> u8 {
-		self.0.to_be_bytes()[3]
-	}
-
-	pub fn a(&self) -> u8 {
-		self.0.to_be_bytes()[0]
-	}
-}
-
-impl PixelColor for ARGB {
-	type Raw = RawU32;
-}
-
-impl From<RawU32> for ARGB {
-	fn from(data: RawU32) -> Self {
-		Self(data)
-	}
-}
-
 // https://docs.rs/embedded-graphics-core/latest/embedded_graphics_core/draw_target/trait.DrawTarget.html
 struct FrameBufferDisplay {
 	framebuffer: Uint8ClampedArray,
@@ -77,7 +41,7 @@ impl FrameBufferDisplay {
 }
 
 impl DrawTarget for FrameBufferDisplay {
-	type Color = ARGB;
+	type Color = Rgb888;
 	type Error = core::convert::Infallible;
 
 	fn draw_iter<I>(&mut self, pixels: I) -> Result<(), Self::Error>
@@ -98,7 +62,7 @@ impl DrawTarget for FrameBufferDisplay {
 				self.framebuffer.set_index(index, color.r());
 				self.framebuffer.set_index(index + 1, color.g());
 				self.framebuffer.set_index(index + 2, color.b());
-				self.framebuffer.set_index(index + 3, color.a());
+				self.framebuffer.set_index(index + 3, 0xff);
 			}
 		}
 
@@ -192,7 +156,7 @@ impl Drawing {
 			19..=u8::MAX => PROFONT_24_POINT,
 		};
 
-		let character_style: MonoTextStyle<ARGB> = MonoTextStyle::new(&font, text_color.into());
+		let character_style: MonoTextStyle<Rgb888> = MonoTextStyle::new(&font, text_color.into());
 		let text = if let Some(style) = text_style {
 			Text::with_text_style(label, position.into(), character_style, style.into())
 		} else {

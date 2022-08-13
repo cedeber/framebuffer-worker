@@ -36,12 +36,7 @@ class Style {
  * Will be transferred as object, so Object notation is also possible
  */
 class Color {
-	constructor(
-		public red: number,
-		public green: number,
-		public blue: number,
-		public alpha?: number,
-	) {}
+	constructor(public red: number, public green: number, public blue: number) {}
 }
 
 /**
