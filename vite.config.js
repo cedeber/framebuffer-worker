@@ -8,7 +8,7 @@ export default defineConfig({
 		lib: {
 			entry: resolve(__dirname, "lib/index.ts"),
 			formats: ["es"],
-			fileName: "framebuffer-worker",
+			fileName: "index",
 		},
 		sourcemap: true,
 		assetsInlineLimit: 0,
