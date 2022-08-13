@@ -10,8 +10,6 @@ export default defineConfig({
 			formats: ["es"],
 			fileName: "index",
 		},
-		sourcemap: true,
-		assetsInlineLimit: 0,
 	},
 	worker: {
 		format: "es",
