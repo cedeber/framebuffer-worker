@@ -14,6 +14,7 @@ release: clean
 	npx esbuild lib/worker.ts --format=esm --bundle --minify --outfile=dist/worker.js
 	# Bundle of Types definition
 	npx tsc --project tsconfig.production.json --outFile dist/index.d.ts
+	echo 'export * from "index";' >> dist/index.d.ts
 
 dev: clean
 	cargo build --lib --target wasm32-unknown-unknown
