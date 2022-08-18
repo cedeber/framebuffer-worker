@@ -4,4 +4,6 @@
 /target
 /node_modules
 /lib/wasm
+/lib/*.js
+/lib/*.js.map
 /dist/

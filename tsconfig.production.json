@@ -1,0 +1,12 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		// We bundle the Types definition
+		"noEmit": false,
+		"emitDeclarationOnly": true,
+		"isolatedModules": false
+	},
+	// "include": ["lib/*.ts", "lib/wasm"],
+	// We don't need to expose the Worker API, it's not part of the exposed API.
+	"exclude": ["node_modules", "**/node_modules/*", "lib/worker.ts"]
+}

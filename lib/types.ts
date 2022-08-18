@@ -1,5 +1,5 @@
-import { Color, Point } from "./index.js";
-import { AppEvents, Size, Style, TextStyle } from "./objects.js";
+import type { Color, Point } from "./index.js";
+import type { AppEvents, Size, Style, TextStyle } from "./objects.js";
 
 interface WorkerApi<T> {
 	id: string;

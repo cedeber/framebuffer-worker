@@ -72,7 +72,7 @@ const start = (canvas: HTMLCanvasElement): (() => Promise<DrawingApi>) => {
 
 	const layer = () =>
 		new Promise<DrawingApi>((resolve) => {
-			const worker = new Worker(new URL("./worker.ts", import.meta.url), { type: "module" });
+			const worker = new Worker(new URL("./worker.js", import.meta.url), { type: "module" });
 			const sharedArrayBuffer = new SharedArrayBuffer(WIDTH * HEIGHT * 4);
 			const u8Array = new Uint8ClampedArray(sharedArrayBuffer);
 

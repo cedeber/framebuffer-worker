@@ -1,6 +1,6 @@
 {
 	"name": "framebuffer-worker",
-	"version": "1.0.0-beta.10",
+	"version": "1.0.0-beta.11",
 	"description": "Draw on a Canvas from a Web Worker",
 	"browser": "./dist/index.js",
 	"types": "./dist/index.d.ts",
@@ -16,7 +16,8 @@
 	"type": "module",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"prepublishOnly": "./build_wasm.sh && vite build"
+		"dev": "watchexec -e rs,ts just dev",
+		"prepublishOnly": "just release"
 	},
 	"repository": {
 		"type": "git",
@@ -34,8 +35,8 @@
 	},
 	"homepage": "https://github.com/cedeber/framebuffer-worker#readme",
 	"devDependencies": {
-		"typescript": "^4.7.4",
-		"vite": "^3.0.7",
-		"vite-plugin-dts": "^1.4.1"
+		"esbuild": "^0.15.5",
+		"just-install": "^1.0.8",
+		"typescript": "^4.7.4"
 	}
 }
