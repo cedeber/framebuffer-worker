@@ -18,12 +18,7 @@ requestAnimationFrame(animate);
 
 /** @type HTMLCanvasElement */
 const canvas = document.getElementById("canvas");
-const layer = init(canvas);
-const someRectangles = [
-	{ x: 0, y: 0, width: 10, height: 10 },
-	{ x: 15, y: 0, width: 10, height: 10 },
-	{ x: 30, y: 0, width: 10, height: 10 },
-];
+const layer = await init(canvas);
 
 layer().then(async ({ clear, render, line, circle, rectangle }) => {
 	const draw = async (i = 0) => {
@@ -64,7 +59,7 @@ layer().then(async ({ clear, render, line, text }) => {
 		await clear();
 
 		await Promise.all([
-			await text({
+			text({
 				position: new Point(x + 3, y - 3),
 				label: `${x.toFixed()}-${y.toFixed()}`,
 				size: 12,
@@ -73,18 +68,12 @@ layer().then(async ({ clear, render, line, text }) => {
 			line({
 				startPoint: new Point(x, 0),
 				endPoint: new Point(x, canvas.height),
-				style: {
-					strokeColor: new Color(65, 105, 225),
-					strokeWidth: 1,
-				},
+				style: new Style(undefined, new Color(65, 105, 225), 1),
 			}),
 			line({
 				startPoint: new Point(0, y),
 				endPoint: new Point(canvas.width, y),
-				style: {
-					strokeColor: new Color(65, 105, 225),
-					strokeWidth: 1,
-				},
+				style: new Style(undefined, new Color(65, 105, 225), 1),
 			}),
 		]);
 

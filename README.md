@@ -79,7 +79,7 @@ Opacity is not supported at the moment.
 
 ```javascript
 const canvas = document.getElementById("canvas");
-const layer = init(canvas);
+const layer = await init(canvas);
 
 layer().then(async ({ clear, render, line, circle, rectangle }) => {
 	// -- snip --

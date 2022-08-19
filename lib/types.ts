@@ -1,5 +1,5 @@
-import type { Color, Point } from "./index.js";
-import type { AppEvents, Size, Style, TextStyle } from "./objects.js";
+import type { Point, Size, Style, Color, TextStyle } from "./wasm/canvas.js";
+import type { AppEvents } from "./objects.js";
 
 interface WorkerApi<T> {
 	id: string;

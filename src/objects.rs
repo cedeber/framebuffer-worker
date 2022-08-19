@@ -2,11 +2,15 @@ use embedded_graphics::pixelcolor::Rgb888;
 use embedded_graphics::{
 	geometry::{Point as EgPoint, Size as EgSize},
 	primitives::{PrimitiveStyle, PrimitiveStyleBuilder},
-	text::{Alignment, Baseline, TextStyle as EgTextStyle, TextStyleBuilder},
+	text::{
+		Alignment as EgAlignment, Baseline as EgBaseline, TextStyle as EgTextStyle,
+		TextStyleBuilder,
+	},
 };
+use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Serialize, Deserialize)]
 #[wasm_bindgen]
 pub struct Style {
 	fill_color: Option<Color>,
@@ -27,6 +31,10 @@ impl Style {
 			stroke_color,
 			stroke_width,
 		}
+	}
+
+	pub fn as_js(&self) -> JsValue {
+		serde_wasm_bindgen::to_value(self).unwrap()
 	}
 }
 
@@ -50,7 +58,45 @@ impl From<Style> for PrimitiveStyle<Rgb888> {
 	}
 }
 
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[wasm_bindgen]
+pub enum Alignment {
+	Left,
+	Center,
+	Right,
+}
+
+impl From<Alignment> for EgAlignment {
+	fn from(alignment: Alignment) -> Self {
+		match alignment {
+			Alignment::Left => EgAlignment::Left,
+			Alignment::Center => EgAlignment::Center,
+			Alignment::Right => EgAlignment::Right,
+		}
+	}
+}
+
+#[derive(Copy, Clone, Serialize, Deserialize)]
+#[wasm_bindgen]
+pub enum Baseline {
+	Top,
+	Bottom,
+	Middle,
+	Alphabetic,
+}
+
+impl From<Baseline> for EgBaseline {
+	fn from(baseline: Baseline) -> Self {
+		match baseline {
+			Baseline::Top => EgBaseline::Top,
+			Baseline::Bottom => EgBaseline::Bottom,
+			Baseline::Middle => EgBaseline::Middle,
+			Baseline::Alphabetic => EgBaseline::Alphabetic,
+		}
+	}
+}
+
+#[derive(Copy, Clone, Serialize, Deserialize)]
 #[wasm_bindgen]
 pub struct TextStyle {
 	alignment: Option<Alignment>,
@@ -87,6 +133,10 @@ impl TextStyle {
 			baseline: base,
 		}
 	}
+
+	pub fn as_js(&self) -> JsValue {
+		serde_wasm_bindgen::to_value(self).unwrap()
+	}
 }
 
 impl From<TextStyle> for EgTextStyle {
@@ -94,18 +144,18 @@ impl From<TextStyle> for EgTextStyle {
 		let mut _style = TextStyleBuilder::new();
 
 		if let Some(baseline) = style.baseline {
-			_style = _style.baseline(baseline);
+			_style = _style.baseline(baseline.into());
 		}
 
 		if let Some(alignment) = style.alignment {
-			_style = _style.alignment(alignment);
+			_style = _style.alignment(alignment.into());
 		}
 
 		_style.build()
 	}
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Serialize, Deserialize)]
 #[wasm_bindgen]
 pub struct Color {
 	red: u8,
@@ -119,6 +169,10 @@ impl Color {
 	pub fn new(red: u8, green: u8, blue: u8) -> Self {
 		Color { red, green, blue }
 	}
+
+	pub fn as_js(&self) -> JsValue {
+		serde_wasm_bindgen::to_value(self).unwrap()
+	}
 }
 
 impl From<Color> for Rgb888 {
@@ -127,11 +181,11 @@ impl From<Color> for Rgb888 {
 	}
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Serialize, Deserialize)]
 #[wasm_bindgen]
 pub struct Point {
-	x: i32,
-	y: i32,
+	pub x: i32,
+	pub y: i32,
 }
 
 #[wasm_bindgen]
@@ -139,6 +193,10 @@ impl Point {
 	#[wasm_bindgen(constructor)]
 	pub fn new(x: i32, y: i32) -> Self {
 		Point { x, y }
+	}
+
+	pub fn as_js(&self) -> JsValue {
+		serde_wasm_bindgen::to_value(self).unwrap()
 	}
 }
 
@@ -148,7 +206,7 @@ impl From<Point> for EgPoint {
 	}
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Serialize, Deserialize)]
 #[wasm_bindgen]
 pub struct Size {
 	width: u32,
@@ -160,6 +218,10 @@ impl Size {
 	#[wasm_bindgen(constructor)]
 	pub fn new(width: u32, height: u32) -> Self {
 		Size { width, height }
+	}
+
+	pub fn as_js(&self) -> JsValue {
+		serde_wasm_bindgen::to_value(self).unwrap()
 	}
 }
 

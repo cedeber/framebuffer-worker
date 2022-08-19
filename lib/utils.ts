@@ -2,7 +2,7 @@
  * Throttle a function but wait that the Promise is resolved before running the next one
  * @see https://underscorejs.org/docs/modules/throttle.html
  */
-function asyncThrottle(func: (...args: any[]) => Promise<unknown>, wait = 300) {
+function asyncThrottle(func: (...args: any[]) => Promise<unknown>, wait = 0) {
 	let timeout: number | undefined;
 	let result: unknown;
 	let previous = 0;

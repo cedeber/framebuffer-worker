@@ -10,8 +10,7 @@ release: clean
 	mkdir -p dist
 	wasm-opt -Os lib/wasm/canvas_bg.wasm -o dist/canvas_bg.wasm
 	# Unfortunately, a lot of code duplication here, but Firefox still does not support `import` in a Worker
-	npx esbuild lib/index.ts --format=esm --bundle --minify --outfile=dist/index.js
-	npx esbuild lib/worker.ts --format=esm --bundle --minify --outfile=dist/worker.js
+	npx esbuild lib/index.ts lib/worker.ts --format=esm --bundle --minify --outdir=dist
 	# Bundle of Types definition
 	npx tsc --project tsconfig.production.json --outDir dist
 

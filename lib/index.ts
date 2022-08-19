@@ -8,6 +8,7 @@ import type {
 } from "./types.js";
 import { mergeImage, uid } from "./utils.js";
 import { AppEvents } from "./objects.js";
+import init from "./wasm/canvas.js";
 
 // Not sure if this is optimized!
 const post = <T>(worker: Worker, event: AppEvents, data?: T): Promise<void> => {
@@ -21,12 +22,27 @@ const post = <T>(worker: Worker, event: AppEvents, data?: T): Promise<void> => {
 		};
 		worker.addEventListener("message", cb);
 
-		const message: WorkerApi<T> = { id, event, data };
+		// FIXME TypeScript drives me nuts with shitty types
+		let dd: any = {} as T;
+		for (const key in data) {
+			const dat: any = data[key];
+
+			// @ts-ignore
+			if (typeof dat.as_js === "function") {
+				dd[key] = dat.as_js();
+			} else if (typeof dat === "number" || typeof dat === "string") {
+				dd[key] = dat;
+			}
+		}
+
+		const message: WorkerApi<T> = { id, event, data: dd };
 		worker.postMessage(message);
 	});
 };
 
-const start = (canvas: HTMLCanvasElement): (() => Promise<DrawingApi>) => {
+const start = async (canvas: HTMLCanvasElement): Promise<() => Promise<DrawingApi>> => {
+	await init();
+
 	// TODO: screen pixel density, aka Retina Display for instance (probably only integer)
 	const ctx = canvas.getContext("2d")!;
 	const WIDTH = canvas.width;
@@ -101,4 +117,4 @@ const start = (canvas: HTMLCanvasElement): (() => Promise<DrawingApi>) => {
 
 export { start as init };
 export { asyncThrottle } from "./utils.js";
-export { Color, Point, Size, Style, TextStyle, Alignment, Baseline } from "./objects.js";
+export { Point, Color, Size, Style, TextStyle, Alignment, Baseline } from "./wasm/canvas.js";
