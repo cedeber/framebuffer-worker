@@ -1,20 +1,18 @@
-clean:
-	rm -rf lib/wasm
-	rm -f lib/*.js lib/*.d.ts lib/*.js.map
-	rm -rf dist
-
-release: clean
-	cargo build --lib --release --target wasm32-unknown-unknown
-	wasm-bindgen --target web --out-dir lib/wasm target/wasm32-unknown-unknown/release/canvas.wasm
-	# We just need the Wasm file at the end, as esbuild will bundle the JS output from wasm-bindgen
-	mkdir -p dist
-	wasm-opt -Os lib/wasm/canvas_bg.wasm -o dist/canvas_bg.wasm
+release:
+	# Clean
+	npx rimraf lib/wasm dist
+	npx rimraf lib/*.js lib/*.d.ts lib/*.js.map
+    # Build Rust
+	npx wasm-pack build --target web --out-dir lib/wasm
+	npx rimraf lib/wasm/package.json lib/wasm/README.md lib/wasm/.gitignore # Not a package
 	# Unfortunately, a lot of code duplication here, but Firefox still does not support `import` in a Worker
 	npx esbuild lib/index.ts lib/worker.ts --format=esm --bundle --minify --outdir=dist
-	# Bundle of Types definition
+	# Types definition
 	npx tsc --project tsconfig.production.json --outDir dist
 
-dev: clean
+dev:
+	rm -f lib/*.js lib/*.d.ts lib/*.js.map
 	cargo build --lib --target wasm32-unknown-unknown
 	wasm-bindgen --target web --out-dir lib/wasm target/wasm32-unknown-unknown/debug/canvas.wasm
+	wasm-opt -O1 lib/wasm/canvas_bg.wasm -o lib/wasm/canvas_bg.wasm
 	npx esbuild lib/*.ts --format=esm --sourcemap --outdir=lib

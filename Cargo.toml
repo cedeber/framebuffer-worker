@@ -3,6 +3,9 @@ name = "canvas"
 version = "0.1.0"
 edition = "2021"
 
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = true
+
 [lib]
 crate-type = ["cdylib", "rlib"]
 
