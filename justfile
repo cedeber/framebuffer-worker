@@ -5,6 +5,7 @@ release:
 	# Build Rust
 	npx wasm-pack build --target web --out-dir lib/wasm
 	npx rimraf lib/wasm/package.json lib/wasm/README.md lib/wasm/.gitignore # Not a package
+	npx cpy lib/wasm/canvas_bg.wasm dist --flat
 	# Unfortunately, a lot of code duplication here, but Firefox still does not support `import` in a Worker
 	npx esbuild lib/index.ts lib/worker.ts --format=esm --bundle --minify --outdir=dist
 	# Types definition
