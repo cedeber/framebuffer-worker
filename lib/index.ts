@@ -10,6 +10,19 @@ import { mergeImage, uid } from "./utils.js";
 import { AppEvents } from "./objects.js";
 import init from "./wasm/canvas.js";
 
+/**
+ * On the Rust size, we have implemented as_js() to export it as JS abject thanks to `serde`.
+ */
+function serializableData(data: any): any {
+	if (typeof data.as_js === "function") {
+		return data.as_js();
+	} else if (typeof data === "number" || typeof data === "string") {
+		return data;
+	} else if (Array.isArray(data)) {
+		return data.map(serializableData);
+	}
+}
+
 // Not sure if this is optimized!
 const post = <T>(worker: Worker, event: AppEvents, data?: T): Promise<void> => {
 	const id = uid();
@@ -25,14 +38,7 @@ const post = <T>(worker: Worker, event: AppEvents, data?: T): Promise<void> => {
 		// FIXME TypeScript drives me nuts with shitty types
 		let dd: any = {} as T;
 		for (const key in data) {
-			const dat: any = data[key];
-
-			// @ts-ignore
-			if (typeof dat.as_js === "function") {
-				dd[key] = dat.as_js();
-			} else if (typeof dat === "number" || typeof dat === "string") {
-				dd[key] = dat;
-			}
+			dd[key] = serializableData(data[key]);
 		}
 
 		const message: WorkerApi<T> = { id, event, data: dd };
