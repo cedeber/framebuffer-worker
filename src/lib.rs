@@ -101,30 +101,32 @@ impl Drawing {
 	}
 
 	pub fn line(&mut self, start_point: JsValue, end_point: JsValue, style: JsValue) {
-		let start: objects::Point = serde_wasm_bindgen::from_value(start_point).unwrap();
-		let end: objects::Point = serde_wasm_bindgen::from_value(end_point).unwrap();
-		let styl: objects::Style = serde_wasm_bindgen::from_value(style).unwrap();
-		Line::new(start.into(), end.into())
-			.into_styled(styl.into())
+		let start_point: objects::Point = serde_wasm_bindgen::from_value(start_point).unwrap();
+		let end_point: objects::Point = serde_wasm_bindgen::from_value(end_point).unwrap();
+		let style: objects::Style = serde_wasm_bindgen::from_value(style).unwrap();
+		Line::new(start_point.into(), end_point.into())
+			.into_styled(style.into())
 			.draw(&mut self.display)
 			.unwrap();
 	}
 
 	pub fn circle(&mut self, top_left_point: JsValue, diameter: u32, style: JsValue) {
-		let top_left: objects::Point = serde_wasm_bindgen::from_value(top_left_point).unwrap();
-		let styl: objects::Style = serde_wasm_bindgen::from_value(style).unwrap();
-		Circle::new(top_left.into(), diameter)
-			.into_styled(styl.into())
+		let top_left_point: objects::Point =
+			serde_wasm_bindgen::from_value(top_left_point).unwrap();
+		let style: objects::Style = serde_wasm_bindgen::from_value(style).unwrap();
+		Circle::new(top_left_point.into(), diameter)
+			.into_styled(style.into())
 			.draw(&mut self.display)
 			.unwrap();
 	}
 
 	pub fn rectangle(&mut self, top_left_point: JsValue, size: JsValue, style: JsValue) {
-		let top_left: objects::Point = serde_wasm_bindgen::from_value(top_left_point).unwrap();
-		let siz: objects::Size = serde_wasm_bindgen::from_value(size).unwrap();
-		let styl: objects::Style = serde_wasm_bindgen::from_value(style).unwrap();
-		Rectangle::new(top_left.into(), siz.into())
-			.into_styled(styl.into())
+		let top_left_point: objects::Point =
+			serde_wasm_bindgen::from_value(top_left_point).unwrap();
+		let size: objects::Size = serde_wasm_bindgen::from_value(size).unwrap();
+		let style: objects::Style = serde_wasm_bindgen::from_value(style).unwrap();
+		Rectangle::new(top_left_point.into(), size.into())
+			.into_styled(style.into())
 			.draw(&mut self.display)
 			.unwrap();
 	}
@@ -137,9 +139,9 @@ impl Drawing {
 		text_color: JsValue,
 		text_style: JsValue,
 	) {
-		let pos: objects::Point = serde_wasm_bindgen::from_value(position).unwrap();
-		let col: objects::Color = serde_wasm_bindgen::from_value(text_color).unwrap();
-		let styl: Option<objects::TextStyle> = if text_style.is_undefined() {
+		let position: objects::Point = serde_wasm_bindgen::from_value(position).unwrap();
+		let text_color: objects::Color = serde_wasm_bindgen::from_value(text_color).unwrap();
+		let text_style: Option<objects::TextStyle> = if text_style.is_undefined() {
 			None
 		} else {
 			Some(serde_wasm_bindgen::from_value::<objects::TextStyle>(text_style).unwrap())
@@ -154,11 +156,11 @@ impl Drawing {
 			19..=u8::MAX => PROFONT_24_POINT,
 		};
 
-		let character_style: MonoTextStyle<Rgb888> = MonoTextStyle::new(&font, col.into());
-		let text = if let Some(styl) = styl {
-			Text::with_text_style(label, pos.into(), character_style, styl.into())
+		let character_style: MonoTextStyle<Rgb888> = MonoTextStyle::new(&font, text_color.into());
+		let text = if let Some(styl) = text_style {
+			Text::with_text_style(label, position.into(), character_style, styl.into())
 		} else {
-			Text::new(label, pos.into(), character_style)
+			Text::new(label, position.into(), character_style)
 		};
 
 		text.draw(&mut self.display).unwrap();

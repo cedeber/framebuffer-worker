@@ -40,21 +40,21 @@ impl Style {
 
 impl From<Style> for PrimitiveStyle<Rgb888> {
 	fn from(style: Style) -> Self {
-		let mut _style: PrimitiveStyleBuilder<Rgb888> = PrimitiveStyleBuilder::new();
+		let mut primitive_style: PrimitiveStyleBuilder<Rgb888> = PrimitiveStyleBuilder::new();
 
 		if let Some(color) = style.fill_color {
-			_style = _style.fill_color(color.into());
+			primitive_style = primitive_style.fill_color(color.into());
 		}
 
 		if let Some(color) = style.stroke_color {
-			_style = _style.stroke_color(color.into());
+			primitive_style = primitive_style.stroke_color(color.into());
 		}
 
 		if let Some(width) = style.stroke_width {
-			_style = _style.stroke_width(width);
+			primitive_style = primitive_style.stroke_width(width);
 		}
 
-		_style.build()
+		primitive_style.build()
 	}
 }
 
@@ -108,7 +108,7 @@ impl TextStyle {
 	#[wasm_bindgen(constructor)]
 	pub fn new(alignment: Option<String>, baseline: Option<String>) -> Self {
 		// Alignment::Left is default
-		let align = match alignment {
+		let alignment = match alignment {
 			Some(value) => match value.as_str() {
 				"center" => Some(Alignment::Center),
 				"right" => Some(Alignment::Right),
@@ -118,7 +118,7 @@ impl TextStyle {
 		};
 
 		// Baseline::Alphabetic is default
-		let base = match baseline {
+		let baseline = match baseline {
 			Some(value) => match value.as_str() {
 				"top" => Some(Baseline::Top),
 				"bottom" => Some(Baseline::Bottom),
@@ -129,8 +129,8 @@ impl TextStyle {
 		};
 
 		TextStyle {
-			alignment: align,
-			baseline: base,
+			alignment,
+			baseline,
 		}
 	}
 
@@ -141,17 +141,17 @@ impl TextStyle {
 
 impl From<TextStyle> for EgTextStyle {
 	fn from(style: TextStyle) -> Self {
-		let mut _style = TextStyleBuilder::new();
+		let mut text_style = TextStyleBuilder::new();
 
 		if let Some(baseline) = style.baseline {
-			_style = _style.baseline(baseline.into());
+			text_style = text_style.baseline(baseline.into());
 		}
 
 		if let Some(alignment) = style.alignment {
-			_style = _style.alignment(alignment.into());
+			text_style = text_style.alignment(alignment.into());
 		}
 
-		_style.build()
+		text_style.build()
 	}
 }
 
@@ -184,8 +184,8 @@ impl From<Color> for Rgb888 {
 #[derive(Copy, Clone, Serialize, Deserialize)]
 #[wasm_bindgen]
 pub struct Point {
-	pub x: i32,
-	pub y: i32,
+	x: i32,
+	y: i32,
 }
 
 #[wasm_bindgen]
