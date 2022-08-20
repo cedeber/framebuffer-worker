@@ -47,14 +47,12 @@ impl DrawTarget for FrameBufferDisplay {
 	where
 		I: IntoIterator<Item = Pixel<Self::Color>>,
 	{
+		let bounding_box = Rectangle::new(Point::new(0, 0), self.size());
 		for Pixel(coord, color) in pixels.into_iter() {
 			// Check if the pixel coordinates are out of bounds (negative or greater than
 			// (WIDTH,HEIGHT)). `DrawTarget` implementation are required to discard any out of bounds
 			// pixels without returning an error or causing a panic.
-			if coord.x >= 0
-				&& coord.x < self.width as i32
-				&& coord.y >= 0 && coord.y < self.height as i32
-			{
+			if bounding_box.contains(coord) {
 				// Calculate the index in the framebuffer.
 				let index: u32 = (coord.x as u32 + coord.y as u32 * self.width) * 4;
 
