@@ -28,6 +28,12 @@ interface RectangleArguments {
 	radius?: number;
 }
 
+/** polyline() function parameters */
+interface PolylineArguments {
+	points: Point[];
+	style: Style;
+}
+
 /** text() function parameters */
 interface TextArguments {
 	position: Point;
@@ -46,6 +52,7 @@ interface DrawingApi {
 	line(args: LineArguments): Promise<void>;
 	circle(args: CircleArguments): Promise<void>;
 	rectangle(args: RectangleArguments): Promise<void>;
+	polyline(args: PolylineArguments): Promise<void>;
 	text(args: TextArguments): Promise<void>;
 }
 
@@ -64,6 +71,7 @@ const enum AppEvents {
 	Line = "line",
 	Circle = "circle",
 	Rectangle = "rectangle",
+	Polyline = "polyline",
 	Text = "text",
 
 	/** A drawing is done */
@@ -77,5 +85,6 @@ export type {
 	LineArguments,
 	CircleArguments,
 	RectangleArguments,
+	PolylineArguments,
 	TextArguments,
 };

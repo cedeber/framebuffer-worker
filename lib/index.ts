@@ -2,6 +2,7 @@ import type {
 	CircleArguments,
 	DrawingApi,
 	LineArguments,
+	PolylineArguments,
 	RectangleArguments,
 	TextArguments,
 	WorkerApi,
@@ -67,6 +68,7 @@ const start = async (canvas: HTMLCanvasElement): Promise<() => Promise<DrawingAp
 			line: (args) => post<LineArguments>(worker, AppEvents.Line, args),
 			circle: (args) => post<CircleArguments>(worker, AppEvents.Circle, args),
 			rectangle: (args) => post<RectangleArguments>(worker, AppEvents.Rectangle, args),
+			polyline: (args) => post<PolylineArguments>(worker, AppEvents.Polyline, args),
 			text: (args) => post<TextArguments>(worker, AppEvents.Text, args),
 			render: () => {
 				// This MUST be very fast

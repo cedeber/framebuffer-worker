@@ -148,6 +148,16 @@ impl Drawing {
 		}
 	}
 
+	pub fn polyline(&mut self, points: JsValue, style: JsValue) {
+		let points: Vec<objects::Point> = serde_wasm_bindgen::from_value(points).unwrap();
+		let points: Vec<Point> = points.iter().map(|point| (*point).into()).collect();
+		let style: objects::Style = serde_wasm_bindgen::from_value(style).unwrap();
+		Polyline::new(points.as_slice())
+			.into_styled(style.into())
+			.draw(&mut self.display)
+			.unwrap();
+	}
+
 	pub fn text(
 		&mut self,
 		position: JsValue,

@@ -20,7 +20,7 @@ requestAnimationFrame(animate);
 const canvas = document.getElementById("canvas");
 const layer = await init(canvas);
 
-layer().then(async ({ clear, render, line, circle, rectangle }) => {
+layer().then(async ({ clear, render, line, circle, rectangle, polyline }) => {
 	const draw = async (i = 0) => {
 		await line({
 			startPoint: new Point(i, 0),
@@ -38,12 +38,27 @@ layer().then(async ({ clear, render, line, circle, rectangle }) => {
 			style: new Style(undefined, new Color(255, 10, 18), 1),
 			radius: 10,
 		});
+		await polyline({
+			points: [
+				new Point(10, 64),
+				new Point(50, 64),
+				new Point(60, 44),
+				new Point(70, 64),
+				new Point(80, 64),
+				new Point(90, 74),
+				new Point(100, 10),
+				new Point(110, 84),
+				new Point(120, 64),
+				new Point(300, 64),
+			],
+			style: new Style(undefined, new Color(176, 230, 156), 3),
+		});
 	};
 
 	const cb = async (event) => {
 		const random = Math.floor(Math.random() * 25);
 		await clear();
-		for (let i = random; i < 1000 + random; i++) {
+		for (let i = random; i < 100 + random; i++) {
 			await draw(i);
 		}
 		await render();

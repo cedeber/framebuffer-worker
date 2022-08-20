@@ -4,6 +4,7 @@ import type {
 	CircleArguments,
 	RectangleArguments,
 	TextArguments,
+	PolylineArguments,
 } from "./objects.js";
 import init, { Drawing } from "./wasm/canvas.js";
 import { AppEvents } from "./objects.js";
@@ -42,6 +43,9 @@ const done = (id: string) => {
 			} else if (event === AppEvents.Rectangle) {
 				const { topLeftPoint, size, style, radius } = <RectangleArguments>data;
 				drawing.rectangle(topLeftPoint, size, style, radius);
+			} else if (event === AppEvents.Polyline) {
+				const { points, style } = <PolylineArguments>data;
+				drawing.polyline(points, style);
 			} else if (event === AppEvents.Text) {
 				const { position, label, size, textColor, textStyle } = <TextArguments>data;
 				drawing.text(position, label, size, textColor, textStyle);
