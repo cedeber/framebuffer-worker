@@ -5,7 +5,7 @@ import type {
 	RectangleArguments,
 	TextArguments,
 	WorkerApi,
-} from "./types.js";
+} from "./objects.js";
 import { mergeImage, uid } from "./utils.js";
 import { AppEvents } from "./objects.js";
 import init from "./wasm/canvas.js";

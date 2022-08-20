@@ -4,8 +4,8 @@ import type {
 	CircleArguments,
 	RectangleArguments,
 	TextArguments,
-} from "./types.js";
-import init, { Color, Drawing, Point, Size, Style, TextStyle } from "./wasm/canvas.js";
+} from "./objects.js";
+import init, { Drawing } from "./wasm/canvas.js";
 import { AppEvents } from "./objects.js";
 
 // TODO pass `ctx` to Wasm in order to `self.postMessage({ event: "reload" })`?
