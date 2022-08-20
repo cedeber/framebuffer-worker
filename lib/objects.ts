@@ -25,6 +25,7 @@ interface RectangleArguments {
 	topLeftPoint: Point;
 	size: Size;
 	style: Style;
+	radius?: number;
 }
 
 /** text() function parameters */

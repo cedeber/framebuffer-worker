@@ -35,7 +35,8 @@ layer().then(async ({ clear, render, line, circle, rectangle }) => {
 		await rectangle({
 			topLeftPoint: new Point(50, 100),
 			size: new Size(300, 40),
-			style: new Style(undefined, new Color(255, 105, 180), 1),
+			style: new Style(undefined, new Color(255, 10, 18), 1),
+			radius: 10,
 		});
 	};
 
@@ -58,6 +59,8 @@ layer().then(async ({ clear, render, line, text }) => {
 
 		await clear();
 
+		const lineStyle = new Style(undefined, new Color(65, 105, 225), 1);
+
 		await Promise.all([
 			text({
 				position: new Point(x + 3, y - 3),
@@ -68,12 +71,12 @@ layer().then(async ({ clear, render, line, text }) => {
 			line({
 				startPoint: new Point(x, 0),
 				endPoint: new Point(x, canvas.height),
-				style: new Style(undefined, new Color(65, 105, 225), 1),
+				style: lineStyle,
 			}),
 			line({
 				startPoint: new Point(0, y),
 				endPoint: new Point(canvas.width, y),
-				style: new Style(undefined, new Color(65, 105, 225), 1),
+				style: lineStyle,
 			}),
 		]);
 

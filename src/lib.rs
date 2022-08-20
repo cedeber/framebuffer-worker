@@ -1,5 +1,6 @@
 mod objects;
 
+use embedded_graphics::primitives::{Polyline, RoundedRectangle};
 use embedded_graphics::{
 	mono_font::MonoTextStyle,
 	pixelcolor::Rgb888,
@@ -120,15 +121,31 @@ impl Drawing {
 			.unwrap();
 	}
 
-	pub fn rectangle(&mut self, top_left_point: JsValue, size: JsValue, style: JsValue) {
+	pub fn rectangle(
+		&mut self,
+		top_left_point: JsValue,
+		size: JsValue,
+		style: JsValue,
+		radius: Option<u32>,
+	) {
 		let top_left_point: objects::Point =
 			serde_wasm_bindgen::from_value(top_left_point).unwrap();
 		let size: objects::Size = serde_wasm_bindgen::from_value(size).unwrap();
 		let style: objects::Style = serde_wasm_bindgen::from_value(style).unwrap();
-		Rectangle::new(top_left_point.into(), size.into())
-			.into_styled(style.into())
-			.draw(&mut self.display)
-			.unwrap();
+
+		let rectangle = Rectangle::new(top_left_point.into(), size.into());
+
+		if let Some(radius) = radius {
+			RoundedRectangle::with_equal_corners(rectangle, Size::new(radius, radius))
+				.into_styled(style.into())
+				.draw(&mut self.display)
+				.unwrap();
+		} else {
+			rectangle
+				.into_styled(style.into())
+				.draw(&mut self.display)
+				.unwrap();
+		}
 	}
 
 	pub fn text(

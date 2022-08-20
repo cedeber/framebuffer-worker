@@ -40,8 +40,8 @@ const done = (id: string) => {
 				const { topLeftPoint, diameter, style } = <CircleArguments>data;
 				drawing.circle(topLeftPoint, diameter, style);
 			} else if (event === AppEvents.Rectangle) {
-				const { topLeftPoint, size, style } = <RectangleArguments>data;
-				drawing.rectangle(topLeftPoint, size, style);
+				const { topLeftPoint, size, style, radius } = <RectangleArguments>data;
+				drawing.rectangle(topLeftPoint, size, style, radius);
 			} else if (event === AppEvents.Text) {
 				const { position, label, size, textColor, textStyle } = <TextArguments>data;
 				drawing.text(position, label, size, textColor, textStyle);
