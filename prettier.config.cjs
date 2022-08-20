@@ -1,6 +1,16 @@
 module.exports = {
-	endOfLine: "lf",
+	endOfLine: 'lf',
 	printWidth: 100,
-	trailingComma: "all",
+	trailingComma: 'all',
 	useTabs: true,
-};
+	'overrides': [
+		{
+			'files': '*.md',
+			'options': {
+				useTabs: false,
+				tabWidth: 2
+			}
+		},
+	]
+
+}
