@@ -105,9 +105,6 @@ Although at every drawings (`clear`, `line`, ...), the buffer is modified, we ke
 
 ## Primitives
 
-You can render all primitives together by using `await Promise.all([..]);`.
-It will do the rendering in one go (wasm is not yet multithreaded) but it will probably not respect the order of drawing.
-
 ### Line
 
 ```javascript
@@ -136,6 +133,28 @@ await rectangle({
 	topLeftPoint: new Point(50, 100),
 	size: new Size(100, 40),
 	style: new Style(new Color(176, 230, 156), new Color(255, 105, 180), 1),
+	radius: 3, //optional
+});
+```
+
+### Polyline
+
+```javascript
+await polyline({
+	points: [
+		new Point(10, 64),
+		new Point(50, 64),
+		new Point(60, 44),
+		new Point(70, 64),
+		new Point(80, 64),
+		new Point(90, 74),
+		new Point(100, 10),
+		new Point(110, 84),
+		new Point(120, 64),
+		new Point(300, 64),
+	],
+	// no fillColor for the polyline
+	style: new Style(undefined, new Color(176, 230, 156), 3),
 });
 ```
 
@@ -154,7 +173,7 @@ await text({
 	label: `Hello, world!`,
 	size: 9,
 	textColor: new Color(33, 33, 33),
-	textStyle: new TextStyle(Alignment.Center, Baseline.Middle),
+	textStyle: new TextStyle(Alignment.Center, Baseline.Middle), // optional
 });
 ```
 
