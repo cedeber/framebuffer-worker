@@ -36,6 +36,13 @@ interface RoundedRectangleArguments {
 	corners: Corners;
 }
 
+/** ellipse() function parameters */
+interface EllipseArguments {
+	topLeftPoint: Point;
+	size: Size;
+	style: Style;
+}
+
 /** polyline() function parameters */
 interface PolylineArguments {
 	points: Point[];
@@ -61,6 +68,7 @@ interface DrawingApi {
 	circle(args: CircleArguments): Promise<void>;
 	rectangle(args: RectangleArguments): Promise<void>;
 	rounded_rectangle(args: RoundedRectangleArguments): Promise<void>;
+	ellipse(args: EllipseArguments): Promise<void>;
 	polyline(args: PolylineArguments): Promise<void>;
 	text(args: TextArguments): Promise<void>;
 }
@@ -81,6 +89,7 @@ const enum AppEvents {
 	Circle = "circle",
 	Rectangle = "rectangle",
 	RoundedRectangle = "rounded_rectangle",
+	Ellipse = "ellipse",
 	Polyline = "polyline",
 	Text = "text",
 
@@ -96,6 +105,7 @@ export type {
 	PolylineArguments,
 	RectangleArguments,
 	RoundedRectangleArguments,
+	EllipseArguments,
 	TextArguments,
 	WorkerApi,
 };

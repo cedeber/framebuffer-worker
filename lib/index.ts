@@ -7,6 +7,7 @@ import type {
 	TextArguments,
 	WorkerApi,
 	RoundedRectangleArguments,
+	EllipseArguments,
 } from "./objects.js";
 import { mergeImage, uid } from "./utils.js";
 import { AppEvents } from "./objects.js";
@@ -71,6 +72,7 @@ const start = async (canvas: HTMLCanvasElement): Promise<() => Promise<DrawingAp
 			rectangle: (args) => post<RectangleArguments>(worker, AppEvents.Rectangle, args),
 			rounded_rectangle: (args) =>
 				post<RoundedRectangleArguments>(worker, AppEvents.RoundedRectangle, args),
+			ellipse: (args) => post<EllipseArguments>(worker, AppEvents.Ellipse, args),
 			polyline: (args) => post<PolylineArguments>(worker, AppEvents.Polyline, args),
 			text: (args) => post<TextArguments>(worker, AppEvents.Text, args),
 			render: () => {

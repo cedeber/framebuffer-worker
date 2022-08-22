@@ -1,6 +1,6 @@
 mod objects;
 
-use embedded_graphics::primitives::{Polyline, RoundedRectangle};
+use embedded_graphics::primitives::{Ellipse, Polyline, RoundedRectangle};
 use embedded_graphics::{
 	mono_font::MonoTextStyle,
 	pixelcolor::Rgb888,
@@ -160,6 +160,18 @@ impl Drawing {
 		let rectangle = Rectangle::new(top_left_point.into(), size.into());
 
 		RoundedRectangle::new(rectangle, corners.into())
+			.into_styled(style.into())
+			.draw(&mut self.display)
+			.unwrap();
+	}
+
+	pub fn ellipse(&mut self, top_left_point: JsValue, size: JsValue, style: JsValue) {
+		let top_left_point: objects::Point =
+			serde_wasm_bindgen::from_value(top_left_point).unwrap();
+		let size: objects::Size = serde_wasm_bindgen::from_value(size).unwrap();
+		let style: objects::Style = serde_wasm_bindgen::from_value(style).unwrap();
+
+		Ellipse::new(top_left_point.into(), size.into())
 			.into_styled(style.into())
 			.draw(&mut self.display)
 			.unwrap();

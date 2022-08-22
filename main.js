@@ -20,7 +20,7 @@ requestAnimationFrame(animate);
 const canvas = document.getElementById("canvas");
 const layer = await init(canvas);
 
-layer().then(async ({ clear, render, line, circle, rounded_rectangle, polyline }) => {
+layer().then(async ({ clear, render, line, circle, rounded_rectangle, polyline, ellipse }) => {
 	const draw = async (i = 0) => {
 		await Promise.all([
 			circle({
@@ -33,16 +33,10 @@ layer().then(async ({ clear, render, line, circle, rounded_rectangle, polyline }
 				endPoint: new Point(canvas.width, canvas.height),
 				style: new Style(undefined, new Color(255, 105, 180), 1),
 			}),
-			rounded_rectangle({
+			ellipse({
 				topLeftPoint: new Point(50, 100),
 				size: new Size(300, 40),
 				style: new Style(new Color(255, 255, 255), new Color(255, 10, 18), 1),
-				corners: new Corners(
-					new Size(3, 6),
-					new Size(9, 12),
-					new Size(10, 10),
-					new Size(4, 4),
-				),
 			}),
 			polyline({
 				points: [

@@ -6,6 +6,7 @@ import type {
 	TextArguments,
 	PolylineArguments,
 	RoundedRectangleArguments,
+	EllipseArguments,
 } from "./objects.js";
 import init, { Drawing } from "./wasm/canvas.js";
 import { AppEvents } from "./objects.js";
@@ -47,6 +48,9 @@ const done = (id: string) => {
 			} else if (event === AppEvents.RoundedRectangle) {
 				const { topLeftPoint, size, style, corners } = <RoundedRectangleArguments>data;
 				drawing.rounded_rectangle(topLeftPoint, size, style, corners);
+			} else if (event === AppEvents.Ellipse) {
+				const { topLeftPoint, size, style } = <EllipseArguments>data;
+				drawing.ellipse(topLeftPoint, size, style);
 			} else if (event === AppEvents.Polyline) {
 				const { points, style } = <PolylineArguments>data;
 				drawing.polyline(points, style);
