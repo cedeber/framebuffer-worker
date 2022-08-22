@@ -130,7 +130,6 @@ impl Drawing {
 			serde_wasm_bindgen::from_value(top_left_point).unwrap();
 		let size: objects::Size = serde_wasm_bindgen::from_value(size).unwrap();
 		let style: objects::Style = serde_wasm_bindgen::from_value(style).unwrap();
-
 		let rectangle = Rectangle::new(top_left_point.into(), size.into());
 
 		if let Some(radius) = radius {
@@ -144,6 +143,26 @@ impl Drawing {
 				.draw(&mut self.display)
 				.unwrap();
 		}
+	}
+
+	pub fn rounded_rectangle(
+		&mut self,
+		top_left_point: JsValue,
+		size: JsValue,
+		style: JsValue,
+		corners: JsValue,
+	) {
+		let top_left_point: objects::Point =
+			serde_wasm_bindgen::from_value(top_left_point).unwrap();
+		let size: objects::Size = serde_wasm_bindgen::from_value(size).unwrap();
+		let style: objects::Style = serde_wasm_bindgen::from_value(style).unwrap();
+		let corners: objects::Corners = serde_wasm_bindgen::from_value(corners).unwrap();
+		let rectangle = Rectangle::new(top_left_point.into(), size.into());
+
+		RoundedRectangle::new(rectangle, corners.into())
+			.into_styled(style.into())
+			.draw(&mut self.display)
+			.unwrap();
 	}
 
 	pub fn polyline(&mut self, points: JsValue, style: JsValue) {

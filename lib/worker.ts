@@ -5,6 +5,7 @@ import type {
 	RectangleArguments,
 	TextArguments,
 	PolylineArguments,
+	RoundedRectangleArguments,
 } from "./objects.js";
 import init, { Drawing } from "./wasm/canvas.js";
 import { AppEvents } from "./objects.js";
@@ -43,6 +44,9 @@ const done = (id: string) => {
 			} else if (event === AppEvents.Rectangle) {
 				const { topLeftPoint, size, style, radius } = <RectangleArguments>data;
 				drawing.rectangle(topLeftPoint, size, style, radius);
+			} else if (event === AppEvents.RoundedRectangle) {
+				const { topLeftPoint, size, style, corners } = <RoundedRectangleArguments>data;
+				drawing.rounded_rectangle(topLeftPoint, size, style, corners);
 			} else if (event === AppEvents.Polyline) {
 				const { points, style } = <PolylineArguments>data;
 				drawing.polyline(points, style);

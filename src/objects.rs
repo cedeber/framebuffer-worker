@@ -1,4 +1,5 @@
 use embedded_graphics::pixelcolor::Rgb888;
+use embedded_graphics::primitives::{CornerRadii, CornerRadiiBuilder};
 use embedded_graphics::{
 	geometry::{Point as EgPoint, Size as EgSize},
 	primitives::{PrimitiveStyle, PrimitiveStyleBuilder},
@@ -228,5 +229,42 @@ impl Size {
 impl From<Size> for EgSize {
 	fn from(size: Size) -> Self {
 		EgSize::new(size.width, size.height)
+	}
+}
+
+#[derive(Copy, Clone, Serialize, Deserialize)]
+#[wasm_bindgen]
+pub struct Corners {
+	top_left: Size,
+	top_right: Size,
+	bottom_right: Size,
+	bottom_left: Size,
+}
+
+#[wasm_bindgen]
+impl Corners {
+	#[wasm_bindgen(constructor)]
+	pub fn new(top_left: Size, top_right: Size, bottom_right: Size, bottom_left: Size) -> Self {
+		Corners {
+			top_left,
+			top_right,
+			bottom_right,
+			bottom_left,
+		}
+	}
+
+	pub fn as_js(&self) -> JsValue {
+		serde_wasm_bindgen::to_value(self).unwrap()
+	}
+}
+
+impl From<Corners> for CornerRadii {
+	fn from(corners: Corners) -> Self {
+		CornerRadiiBuilder::new()
+			.top_left(corners.top_left.into())
+			.top_right(corners.top_right.into())
+			.bottom_right(corners.bottom_right.into())
+			.bottom_left(corners.bottom_left.into())
+			.build()
 	}
 }

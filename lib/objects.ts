@@ -1,4 +1,4 @@
-import type { Point, Size, Style, Color, TextStyle } from "./wasm/canvas.js";
+import type { Point, Size, Style, Color, TextStyle, Corners } from "./wasm/canvas.js";
 
 interface WorkerApi<T> {
 	id: string;
@@ -28,6 +28,14 @@ interface RectangleArguments {
 	radius?: number;
 }
 
+/** rounded_rectangle() function parameters */
+interface RoundedRectangleArguments {
+	topLeftPoint: Point;
+	size: Size;
+	style: Style;
+	corners: Corners;
+}
+
 /** polyline() function parameters */
 interface PolylineArguments {
 	points: Point[];
@@ -52,6 +60,7 @@ interface DrawingApi {
 	line(args: LineArguments): Promise<void>;
 	circle(args: CircleArguments): Promise<void>;
 	rectangle(args: RectangleArguments): Promise<void>;
+	rounded_rectangle(args: RoundedRectangleArguments): Promise<void>;
 	polyline(args: PolylineArguments): Promise<void>;
 	text(args: TextArguments): Promise<void>;
 }
@@ -71,6 +80,7 @@ const enum AppEvents {
 	Line = "line",
 	Circle = "circle",
 	Rectangle = "rectangle",
+	RoundedRectangle = "rounded_rectangle",
 	Polyline = "polyline",
 	Text = "text",
 
@@ -80,11 +90,12 @@ const enum AppEvents {
 
 export { AppEvents };
 export type {
-	WorkerApi,
+	CircleArguments,
 	DrawingApi,
 	LineArguments,
-	CircleArguments,
-	RectangleArguments,
 	PolylineArguments,
+	RectangleArguments,
+	RoundedRectangleArguments,
 	TextArguments,
+	WorkerApi,
 };

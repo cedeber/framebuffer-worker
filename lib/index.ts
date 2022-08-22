@@ -6,6 +6,7 @@ import type {
 	RectangleArguments,
 	TextArguments,
 	WorkerApi,
+	RoundedRectangleArguments,
 } from "./objects.js";
 import { mergeImage, uid } from "./utils.js";
 import { AppEvents } from "./objects.js";
@@ -68,6 +69,8 @@ const start = async (canvas: HTMLCanvasElement): Promise<() => Promise<DrawingAp
 			line: (args) => post<LineArguments>(worker, AppEvents.Line, args),
 			circle: (args) => post<CircleArguments>(worker, AppEvents.Circle, args),
 			rectangle: (args) => post<RectangleArguments>(worker, AppEvents.Rectangle, args),
+			rounded_rectangle: (args) =>
+				post<RoundedRectangleArguments>(worker, AppEvents.RoundedRectangle, args),
 			polyline: (args) => post<PolylineArguments>(worker, AppEvents.Polyline, args),
 			text: (args) => post<TextArguments>(worker, AppEvents.Text, args),
 			render: () => {
@@ -125,4 +128,13 @@ const start = async (canvas: HTMLCanvasElement): Promise<() => Promise<DrawingAp
 
 export { start as init };
 export { asyncThrottle } from "./utils.js";
-export { Point, Color, Size, Style, TextStyle, Alignment, Baseline } from "./wasm/canvas.js";
+export {
+	Point,
+	Color,
+	Size,
+	Style,
+	TextStyle,
+	Alignment,
+	Baseline,
+	Corners,
+} from "./wasm/canvas.js";

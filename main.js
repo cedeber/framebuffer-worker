@@ -1,4 +1,4 @@
-import { init, asyncThrottle, Point, Color, Size, Style } from "./lib/index.js";
+import { init, asyncThrottle, Point, Color, Size, Style, Corners } from "./lib/index.js";
 
 // Animate the loading spinner via JavaScript to see if the main thread is not blocked.
 const loading = document.getElementById("loading");
@@ -20,7 +20,7 @@ requestAnimationFrame(animate);
 const canvas = document.getElementById("canvas");
 const layer = await init(canvas);
 
-layer().then(async ({ clear, render, line, circle, rectangle, polyline }) => {
+layer().then(async ({ clear, render, line, circle, rounded_rectangle, polyline }) => {
 	const draw = async (i = 0) => {
 		await Promise.all([
 			circle({
@@ -33,11 +33,16 @@ layer().then(async ({ clear, render, line, circle, rectangle, polyline }) => {
 				endPoint: new Point(canvas.width, canvas.height),
 				style: new Style(undefined, new Color(255, 105, 180), 1),
 			}),
-			rectangle({
+			rounded_rectangle({
 				topLeftPoint: new Point(50, 100),
 				size: new Size(300, 40),
 				style: new Style(new Color(255, 255, 255), new Color(255, 10, 18), 1),
-				radius: 10,
+				corners: new Corners(
+					new Size(3, 6),
+					new Size(9, 12),
+					new Size(10, 10),
+					new Size(4, 4),
+				),
 			}),
 			polyline({
 				points: [
