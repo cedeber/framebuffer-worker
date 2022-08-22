@@ -130,6 +130,16 @@ await circle({
 });
 ```
 
+### Ellipse
+
+```javascript
+await ellipse({
+  topLeftPoint: new Point(10, 20),
+  size: new Size(300, 40),
+  style: new Style(new Color(176, 230, 156), new Color(255, 105, 180), 2),
+});
+```
+
 ### Rectangle
 
 ```javascript
@@ -138,6 +148,17 @@ await rectangle({
   size: new Size(100, 40),
   style: new Style(new Color(176, 230, 156), new Color(255, 105, 180), 1),
   radius: 3, //optional
+});
+```
+
+### Rounded Rectangle
+
+```javascript
+await rounded_rectangle({
+  topLeftPoint: new Point(50, 100),
+  size: new Size(300, 40),
+  style: new Style(new Color(255, 255, 255), new Color(255, 10, 18), 1),
+  corners: new Corners(new Size(3, 6), new Size(9, 12), new Size(10, 10), new Size(4, 4)),
 });
 ```
 
