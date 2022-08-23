@@ -1,7 +1,7 @@
 use embedded_graphics::pixelcolor::Rgb888;
 use embedded_graphics::primitives::{CornerRadii, CornerRadiiBuilder};
 use embedded_graphics::{
-	geometry::{Point as EgPoint, Size as EgSize},
+	geometry::{Angle as EgAngle, Point as EgPoint, Size as EgSize},
 	primitives::{PrimitiveStyle, PrimitiveStyleBuilder},
 	text::{
 		Alignment as EgAlignment, Baseline as EgBaseline, TextStyle as EgTextStyle,
@@ -266,5 +266,29 @@ impl From<Corners> for CornerRadii {
 			.bottom_right(corners.bottom_right.into())
 			.bottom_left(corners.bottom_left.into())
 			.build()
+	}
+}
+
+#[derive(Copy, Clone, Serialize, Deserialize)]
+#[wasm_bindgen]
+pub struct Angle {
+	degree: f32,
+}
+
+#[wasm_bindgen]
+impl Angle {
+	#[wasm_bindgen(constructor)]
+	pub fn new(degree: f32) -> Self {
+		Angle { degree }
+	}
+
+	pub fn as_js(&self) -> JsValue {
+		serde_wasm_bindgen::to_value(self).unwrap()
+	}
+}
+
+impl From<Angle> for EgAngle {
+	fn from(angle: Angle) -> Self {
+		EgAngle::from_degrees(angle.degree)
 	}
 }

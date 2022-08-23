@@ -1,21 +1,20 @@
 mod objects;
 
-use embedded_graphics::primitives::{Ellipse, Polyline, RoundedRectangle, Triangle};
+use embedded_graphics::primitives::Sector;
 use embedded_graphics::{
 	mono_font::MonoTextStyle,
 	pixelcolor::Rgb888,
 	prelude::*,
-	primitives::{Circle, Line, Rectangle},
+	primitives::{Arc, Circle, Ellipse, Line, Polyline, Rectangle, RoundedRectangle, Triangle},
 	text::Text,
 };
-use js_sys::{Object, SharedArrayBuffer, Uint8ClampedArray};
+use js_sys::{SharedArrayBuffer, Uint8ClampedArray};
 use profont::{
 	PROFONT_10_POINT, PROFONT_12_POINT, PROFONT_14_POINT, PROFONT_18_POINT, PROFONT_24_POINT,
 	PROFONT_7_POINT, PROFONT_9_POINT,
 };
 use serde::de::DeserializeOwned;
 use wasm_bindgen::prelude::*;
-use wasm_bindgen::JsCast;
 
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
@@ -169,6 +168,54 @@ impl Drawing {
 			.into_styled(style.into())
 			.draw(&mut self.display)
 			.unwrap();
+	}
+
+	pub fn arc(
+		&mut self,
+		top_left_point: JsValue,
+		diameter: u32,
+		angle_start: JsValue,
+		angle_sweep: JsValue,
+		style: JsValue,
+	) {
+		let top_left_point: objects::Point = from_js(top_left_point);
+		let angle_start: objects::Angle = from_js(angle_start);
+		let angle_sweep: objects::Angle = from_js(angle_sweep);
+		let style: objects::Style = from_js(style);
+
+		Arc::new(
+			top_left_point.into(),
+			diameter,
+			angle_start.into(),
+			angle_sweep.into(),
+		)
+		.into_styled(style.into())
+		.draw(&mut self.display)
+		.unwrap();
+	}
+
+	pub fn sector(
+		&mut self,
+		top_left_point: JsValue,
+		diameter: u32,
+		angle_start: JsValue,
+		angle_sweep: JsValue,
+		style: JsValue,
+	) {
+		let top_left_point: objects::Point = from_js(top_left_point);
+		let angle_start: objects::Angle = from_js(angle_start);
+		let angle_sweep: objects::Angle = from_js(angle_sweep);
+		let style: objects::Style = from_js(style);
+
+		Sector::new(
+			top_left_point.into(),
+			diameter,
+			angle_start.into(),
+			angle_sweep.into(),
+		)
+		.into_styled(style.into())
+		.draw(&mut self.display)
+		.unwrap();
 	}
 
 	pub fn ellipse(&mut self, top_left_point: JsValue, size: JsValue, style: JsValue) {

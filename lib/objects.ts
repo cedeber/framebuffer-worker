@@ -1,4 +1,4 @@
-import type { Point, Size, Style, Color, TextStyle, Corners } from "./wasm/canvas.js";
+import type { Point, Size, Style, Color, TextStyle, Corners, Angle } from "./wasm/canvas.js";
 
 interface WorkerApi<T> {
 	id: string;
@@ -43,7 +43,25 @@ interface EllipseArguments {
 	style: Style;
 }
 
-/** polyline() function parameters */
+/** arc() function parameters */
+interface ArcArguments {
+	topLeftPoint: Point;
+	diameter: number;
+	angleStart: Angle;
+	angleSweep: Angle;
+	style: Style;
+}
+
+/** sector() function parameters */
+interface SectorArguments {
+	topLeftPoint: Point;
+	diameter: number;
+	angleStart: Angle;
+	angleSweep: Angle;
+	style: Style;
+}
+
+/** triangle() function parameters */
 interface TriangleArguments {
 	vertex1: Point;
 	vertex2: Point;
@@ -76,8 +94,10 @@ interface DrawingApi {
 	circle(args: CircleArguments): Promise<void>;
 	rectangle(args: RectangleArguments): Promise<void>;
 	rounded_rectangle(args: RoundedRectangleArguments): Promise<void>;
-	triangle(args: TriangleArguments): Promise<void>;
 	ellipse(args: EllipseArguments): Promise<void>;
+	arc(args: ArcArguments): Promise<void>;
+	sector(args: SectorArguments): Promise<void>;
+	triangle(args: TriangleArguments): Promise<void>;
 	polyline(args: PolylineArguments): Promise<void>;
 	text(args: TextArguments): Promise<void>;
 }
@@ -98,8 +118,10 @@ const enum AppEvents {
 	Circle = "circle",
 	Rectangle = "rectangle",
 	RoundedRectangle = "rounded_rectangle",
-	Triangle = "triangle",
 	Ellipse = "ellipse",
+	Arc = "arc",
+	Sector = "sector",
+	Triangle = "triangle",
 	Polyline = "polyline",
 	Text = "text",
 
@@ -109,14 +131,16 @@ const enum AppEvents {
 
 export { AppEvents };
 export type {
+	ArcArguments,
 	CircleArguments,
 	DrawingApi,
+	EllipseArguments,
 	LineArguments,
 	PolylineArguments,
 	RectangleArguments,
 	RoundedRectangleArguments,
-	EllipseArguments,
+	SectorArguments,
 	TextArguments,
-	WorkerApi,
 	TriangleArguments,
+	WorkerApi,
 };

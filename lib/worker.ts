@@ -8,6 +8,8 @@ import type {
 	RoundedRectangleArguments,
 	EllipseArguments,
 	TriangleArguments,
+	ArcArguments,
+	SectorArguments,
 } from "./objects.js";
 import init, { Drawing } from "./wasm/canvas.js";
 import { AppEvents } from "./objects.js";
@@ -52,6 +54,16 @@ const done = (id: string) => {
 			} else if (event === AppEvents.Ellipse) {
 				const { topLeftPoint, size, style } = <EllipseArguments>data;
 				drawing.ellipse(topLeftPoint, size, style);
+			} else if (event === AppEvents.Arc) {
+				const { topLeftPoint, diameter, angleStart, angleSweep, style } = <ArcArguments>(
+					data
+				);
+				drawing.arc(topLeftPoint, diameter, angleStart, angleSweep, style);
+			} else if (event === AppEvents.Sector) {
+				const { topLeftPoint, diameter, angleStart, angleSweep, style } = <SectorArguments>(
+					data
+				);
+				drawing.sector(topLeftPoint, diameter, angleStart, angleSweep, style);
 			} else if (event === AppEvents.Triangle) {
 				const { vertex1, vertex2, vertex3, style } = <TriangleArguments>data;
 				drawing.triangle(vertex1, vertex2, vertex3, style);
