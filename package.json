@@ -27,7 +27,9 @@
 	"keywords": [
 		"worker",
 		"canvas",
-		"framebuffer"
+		"framebuffer",
+		"rust",
+		"webassembly"
 	],
 	"author": "Cédric Eberhardt <hello+code@cedeber.fr>",
 	"license": "Unlicense",
