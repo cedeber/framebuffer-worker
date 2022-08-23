@@ -24,7 +24,7 @@ That's why everything is _asynchronous_.
 import { init, asyncThrottle, Style, Color, Point } from "framebuffer-worker";
 
 const canvas = document.getElementById("canvas");
-const layer = init(canvas);
+const layer = await init(canvas);
 
 layer().then(async ({ clear, render, line }) => {
   await clear();
