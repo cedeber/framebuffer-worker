@@ -44,6 +44,14 @@ interface EllipseArguments {
 }
 
 /** polyline() function parameters */
+interface TriangleArguments {
+	vertex1: Point;
+	vertex2: Point;
+	vertex3: Point;
+	style: Style;
+}
+
+/** polyline() function parameters */
 interface PolylineArguments {
 	points: Point[];
 	style: Style;
@@ -68,6 +76,7 @@ interface DrawingApi {
 	circle(args: CircleArguments): Promise<void>;
 	rectangle(args: RectangleArguments): Promise<void>;
 	rounded_rectangle(args: RoundedRectangleArguments): Promise<void>;
+	triangle(args: TriangleArguments): Promise<void>;
 	ellipse(args: EllipseArguments): Promise<void>;
 	polyline(args: PolylineArguments): Promise<void>;
 	text(args: TextArguments): Promise<void>;
@@ -89,6 +98,7 @@ const enum AppEvents {
 	Circle = "circle",
 	Rectangle = "rectangle",
 	RoundedRectangle = "rounded_rectangle",
+	Triangle = "triangle",
 	Ellipse = "ellipse",
 	Polyline = "polyline",
 	Text = "text",
@@ -108,4 +118,5 @@ export type {
 	EllipseArguments,
 	TextArguments,
 	WorkerApi,
+	TriangleArguments,
 };

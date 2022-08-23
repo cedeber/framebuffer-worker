@@ -1,6 +1,6 @@
 mod objects;
 
-use embedded_graphics::primitives::{Ellipse, Polyline, RoundedRectangle};
+use embedded_graphics::primitives::{Ellipse, Polyline, RoundedRectangle, Triangle};
 use embedded_graphics::{
 	mono_font::MonoTextStyle,
 	pixelcolor::Rgb888,
@@ -8,12 +8,14 @@ use embedded_graphics::{
 	primitives::{Circle, Line, Rectangle},
 	text::Text,
 };
-use js_sys::{SharedArrayBuffer, Uint8ClampedArray};
+use js_sys::{Object, SharedArrayBuffer, Uint8ClampedArray};
 use profont::{
 	PROFONT_10_POINT, PROFONT_12_POINT, PROFONT_14_POINT, PROFONT_18_POINT, PROFONT_24_POINT,
 	PROFONT_7_POINT, PROFONT_9_POINT,
 };
+use serde::de::DeserializeOwned;
 use wasm_bindgen::prelude::*;
+use wasm_bindgen::JsCast;
 
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
@@ -78,6 +80,13 @@ pub struct Drawing {
 	display: FrameBufferDisplay,
 }
 
+fn from_js<T>(value: JsValue) -> T
+where
+	T: DeserializeOwned,
+{
+	serde_wasm_bindgen::from_value::<T>(value).unwrap()
+}
+
 #[wasm_bindgen]
 impl Drawing {
 	#[wasm_bindgen(constructor)]
@@ -100,9 +109,9 @@ impl Drawing {
 	}
 
 	pub fn line(&mut self, start_point: JsValue, end_point: JsValue, style: JsValue) {
-		let start_point: objects::Point = serde_wasm_bindgen::from_value(start_point).unwrap();
-		let end_point: objects::Point = serde_wasm_bindgen::from_value(end_point).unwrap();
-		let style: objects::Style = serde_wasm_bindgen::from_value(style).unwrap();
+		let start_point: objects::Point = from_js(start_point);
+		let end_point: objects::Point = from_js(end_point);
+		let style: objects::Style = from_js(style);
 		Line::new(start_point.into(), end_point.into())
 			.into_styled(style.into())
 			.draw(&mut self.display)
@@ -110,9 +119,8 @@ impl Drawing {
 	}
 
 	pub fn circle(&mut self, top_left_point: JsValue, diameter: u32, style: JsValue) {
-		let top_left_point: objects::Point =
-			serde_wasm_bindgen::from_value(top_left_point).unwrap();
-		let style: objects::Style = serde_wasm_bindgen::from_value(style).unwrap();
+		let top_left_point: objects::Point = from_js(top_left_point);
+		let style: objects::Style = from_js(style);
 		Circle::new(top_left_point.into(), diameter)
 			.into_styled(style.into())
 			.draw(&mut self.display)
@@ -126,10 +134,9 @@ impl Drawing {
 		style: JsValue,
 		radius: Option<u32>,
 	) {
-		let top_left_point: objects::Point =
-			serde_wasm_bindgen::from_value(top_left_point).unwrap();
-		let size: objects::Size = serde_wasm_bindgen::from_value(size).unwrap();
-		let style: objects::Style = serde_wasm_bindgen::from_value(style).unwrap();
+		let top_left_point: objects::Point = from_js(top_left_point);
+		let size: objects::Size = from_js(size);
+		let style: objects::Style = from_js(style);
 		let rectangle = Rectangle::new(top_left_point.into(), size.into());
 
 		if let Some(radius) = radius {
@@ -152,11 +159,10 @@ impl Drawing {
 		style: JsValue,
 		corners: JsValue,
 	) {
-		let top_left_point: objects::Point =
-			serde_wasm_bindgen::from_value(top_left_point).unwrap();
-		let size: objects::Size = serde_wasm_bindgen::from_value(size).unwrap();
-		let style: objects::Style = serde_wasm_bindgen::from_value(style).unwrap();
-		let corners: objects::Corners = serde_wasm_bindgen::from_value(corners).unwrap();
+		let top_left_point: objects::Point = from_js(top_left_point);
+		let size: objects::Size = from_js(size);
+		let style: objects::Style = from_js(style);
+		let corners: objects::Corners = from_js(corners);
 		let rectangle = Rectangle::new(top_left_point.into(), size.into());
 
 		RoundedRectangle::new(rectangle, corners.into())
@@ -166,12 +172,29 @@ impl Drawing {
 	}
 
 	pub fn ellipse(&mut self, top_left_point: JsValue, size: JsValue, style: JsValue) {
-		let top_left_point: objects::Point =
-			serde_wasm_bindgen::from_value(top_left_point).unwrap();
-		let size: objects::Size = serde_wasm_bindgen::from_value(size).unwrap();
-		let style: objects::Style = serde_wasm_bindgen::from_value(style).unwrap();
+		let top_left_point: objects::Point = from_js(top_left_point);
+		let size: objects::Size = from_js(size);
+		let style: objects::Style = from_js(style);
 
 		Ellipse::new(top_left_point.into(), size.into())
+			.into_styled(style.into())
+			.draw(&mut self.display)
+			.unwrap();
+	}
+
+	pub fn triangle(
+		&mut self,
+		vertex1: JsValue,
+		vertex2: JsValue,
+		vertex3: JsValue,
+		style: JsValue,
+	) {
+		let vertex1: objects::Point = from_js(vertex1);
+		let vertex2: objects::Point = from_js(vertex2);
+		let vertex3: objects::Point = from_js(vertex3);
+		let style: objects::Style = from_js(style);
+
+		Triangle::new(vertex1.into(), vertex2.into(), vertex3.into())
 			.into_styled(style.into())
 			.draw(&mut self.display)
 			.unwrap();
