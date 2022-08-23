@@ -130,16 +130,6 @@ await circle({
 });
 ```
 
-### Ellipse
-
-```javascript
-await ellipse({
-  topLeftPoint: new Point(10, 20),
-  size: new Size(300, 40),
-  style: new Style(new Color(176, 230, 156), new Color(255, 105, 180), 2),
-});
-```
-
 ### Rectangle
 
 ```javascript
@@ -159,6 +149,52 @@ await rounded_rectangle({
   size: new Size(300, 40),
   style: new Style(new Color(255, 255, 255), new Color(255, 10, 18), 1),
   corners: new Corners(new Size(3, 6), new Size(9, 12), new Size(10, 10), new Size(4, 4)),
+});
+```
+
+### Ellipse
+
+```javascript
+await ellipse({
+  topLeftPoint: new Point(10, 20),
+  size: new Size(300, 40),
+  style: new Style(new Color(176, 230, 156), new Color(255, 105, 180), 2),
+});
+```
+
+### Arc
+
+```javascript
+await arc({
+  topLeftPoint: new Point(100, 240),
+  diameter: 130,
+  angleStart: new Angle(0),
+  angleSweep: new Angle(72),
+  // no fillColor for the polyline
+  style: new Style(undefined, new Color(127, 127, 127), 5),
+});
+```
+
+### Sector
+
+```javascript
+await sector({
+  topLeftPoint: new Point(80, 260),
+  diameter: 130,
+  angleStart: new Angle(35),
+  angleSweep: new Angle(300),
+  style: new Style(new Color(253, 216, 53)),
+});
+```
+
+### Triangle
+
+```javascript
+await triangle({
+  vertex1: new Point(10, 64),
+  vertex2: new Point(50, 64),
+  vertex3: new Point(60, 44),
+  style: new Style(new Color(48, 120, 214)),
 });
 ```
 
