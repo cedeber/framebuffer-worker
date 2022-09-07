@@ -13,3 +13,5 @@
 *.py
 *.sh
 *.toml
+Dockerfile
+serve.json
