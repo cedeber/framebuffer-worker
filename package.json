@@ -1,6 +1,6 @@
 {
 	"name": "framebuffer-worker",
-	"version": "1.0.0-rc.1",
+	"version": "1.0.0-rc.2",
 	"description": "Draw on a Canvas from a Web Worker",
 	"browser": "./dist/index.js",
 	"types": "./dist/index.d.ts",
@@ -38,11 +38,7 @@
 	},
 	"homepage": "https://github.com/cedeber/framebuffer-worker#readme",
 	"devDependencies": {
-		"cpy-cli": "^4.1.0",
 		"esbuild": "^0.15.5",
-		"just-install": "^1.0.8",
-		"rimraf": "^3.0.2",
-		"typescript": "^4.7.4",
-		"wasm-pack": "^0.10.3"
+		"typescript": "^4.7.4"
 	}
 }
