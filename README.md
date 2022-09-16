@@ -7,6 +7,9 @@ visualization of millions of data which usually take some seconds to render.
 
 By doing it off-the-main-thread, in a Worker, it will never block the UI.
 
+[![demo](https://img.shields.io/badge/demo-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://framebuffer-worker.dev.cedeber.fr)
+[![npm](https://img.shields.io/npm/v/framebuffer-worker?logo=npm&style=for-the-badge&color=success)](https://www.npmjs.com/package/framebuffer-worker)
+
 ## How does it work?
 
 As the [`OffscreenCanvas`](https://developer.mozilla.org/en-US/docs/Web/API/OffscreenCanvas) API is still experimental,
