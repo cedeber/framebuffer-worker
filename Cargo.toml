@@ -27,6 +27,7 @@ opt-level = "s"
 console_error_panic_hook = "0.1.7"
 embedded-graphics = "0.7.1"
 js-sys = "0.3.58"
+num = "0.4.0"
 profont = "0.6.1"
 serde = { version = "1.0.139", features = ["derive"] }
 serde-wasm-bindgen = "0.4.3"
