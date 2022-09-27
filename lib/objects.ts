@@ -1,78 +1,90 @@
-import type { Point, Size, Style, Color, TextStyle, Corners, Angle } from "./wasm/canvas.js";
+import type {
+	Point,
+	Size,
+	Style,
+	Color,
+	TextStyle,
+	Corners,
+	Angle,
+	Bounding,
+} from "./wasm/canvas.js";
 
-interface WorkerApi<T> {
+/** Basic data to allow recognition of the event with the Worker */
+interface WorkerCommunication {
 	id: string;
 	event: AppEvents;
+}
+
+interface WorkerRequest<T> extends WorkerCommunication {
 	data?: T;
 }
 
+interface WorkerResponse extends WorkerCommunication {
+	bounding?: Bounding;
+}
+
+interface Shape {
+	style: Style;
+}
+
 /** line() function parameters */
-interface LineArguments {
+interface LineArguments extends Shape {
 	startPoint: Point;
 	endPoint: Point;
-	style: Style;
 }
 
 /** circle() function parameters */
-interface CircleArguments {
+interface CircleArguments extends Shape {
 	topLeftPoint: Point;
 	diameter: number;
-	style: Style;
 }
 
 /** rectangle() function parameters */
-interface RectangleArguments {
+interface RectangleArguments extends Shape {
 	topLeftPoint: Point;
 	size: Size;
-	style: Style;
 	radius?: number;
 }
 
 /** rounded_rectangle() function parameters */
-interface RoundedRectangleArguments {
+interface RoundedRectangleArguments extends Shape {
 	topLeftPoint: Point;
 	size: Size;
-	style: Style;
 	corners: Corners;
 }
 
 /** ellipse() function parameters */
-interface EllipseArguments {
+interface EllipseArguments extends Shape {
 	topLeftPoint: Point;
 	size: Size;
-	style: Style;
 }
 
 /** arc() function parameters */
-interface ArcArguments {
+interface ArcArguments extends Shape {
 	topLeftPoint: Point;
 	diameter: number;
 	angleStart: Angle;
 	angleSweep: Angle;
-	style: Style;
 }
 
 /** sector() function parameters */
-interface SectorArguments {
+interface SectorArguments extends Shape {
 	topLeftPoint: Point;
 	diameter: number;
 	angleStart: Angle;
 	angleSweep: Angle;
-	style: Style;
 }
 
 /** triangle() function parameters */
-interface TriangleArguments {
+interface TriangleArguments extends Shape {
 	vertex1: Point;
 	vertex2: Point;
 	vertex3: Point;
-	style: Style;
 }
 
 /** polyline() function parameters */
-interface PolylineArguments {
+interface PolylineArguments extends Shape {
 	points: Point[];
-	style: Style;
 }
 
 /** text() function parameters */
@@ -84,6 +96,11 @@ interface TextArguments {
 	textStyle?: TextStyle;
 }
 
+export type BoundingJs = {
+	top_left: { x: number; y: number };
+	size: { width: number; height: number };
+};
+
 /** => Has to fake the Rust API */
 interface DrawingApi {
 	/** Fill the whole framebuffer with `0x0` */
@@ -91,15 +108,15 @@ interface DrawingApi {
 	/** Render the framebuffer into the Canvas */
 	render(): Promise<void>;
 	line(args: LineArguments): Promise<void>;
-	circle(args: CircleArguments): Promise<void>;
-	rectangle(args: RectangleArguments): Promise<void>;
-	rounded_rectangle(args: RoundedRectangleArguments): Promise<void>;
-	ellipse(args: EllipseArguments): Promise<void>;
-	arc(args: ArcArguments): Promise<void>;
-	sector(args: SectorArguments): Promise<void>;
-	triangle(args: TriangleArguments): Promise<void>;
-	polyline(args: PolylineArguments): Promise<void>;
-	text(args: TextArguments): Promise<void>;
+	circle(args: CircleArguments): Promise<Bounding | null>;
+	rectangle(args: RectangleArguments): Promise<Bounding | null>;
+	rounded_rectangle(args: RoundedRectangleArguments): Promise<Bounding | null>;
+	ellipse(args: EllipseArguments): Promise<Bounding | null>;
+	arc(args: ArcArguments): Promise<Bounding | null>;
+	sector(args: SectorArguments): Promise<Bounding | null>;
+	triangle(args: TriangleArguments): Promise<Bounding | null>;
+	polyline(args: PolylineArguments): Promise<Bounding | null>;
+	text(args: TextArguments): Promise<Bounding | null>;
 }
 
 const enum AppEvents {
@@ -142,5 +159,6 @@ export type {
 	SectorArguments,
 	TextArguments,
 	TriangleArguments,
-	WorkerApi,
+	WorkerRequest,
+	WorkerResponse,
 };

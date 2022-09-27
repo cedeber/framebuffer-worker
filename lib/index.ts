@@ -5,16 +5,17 @@ import type {
 	PolylineArguments,
 	RectangleArguments,
 	TextArguments,
-	WorkerApi,
 	RoundedRectangleArguments,
 	EllipseArguments,
 	TriangleArguments,
 	ArcArguments,
 	SectorArguments,
+	WorkerResponse,
+	WorkerRequest,
 } from "./objects.js";
-import { mergeImage, uid } from "./utils.js";
+import { createBounding, mergeImage, uid } from "./utils.js";
 import { AppEvents } from "./objects.js";
-import init from "./wasm/canvas.js";
+import init, { Bounding } from "./wasm/canvas.js";
 
 /**
  * On the Rust size, we have implemented as_js() to export it as JS abject thanks to `serde`.
@@ -30,13 +31,13 @@ function serializableData(data: any): any {
 }
 
 // Not sure if this is optimized!
-const post = <T>(worker: Worker, event: AppEvents, data?: T): Promise<void> => {
+const post = <T>(worker: Worker, event: AppEvents, data?: T): Promise<any> => {
 	const id = uid();
-	return new Promise<void>((resolve) => {
-		const cb = ({ data }: MessageEvent<WorkerApi<T>>) => {
+	return new Promise((resolve) => {
+		const cb = ({ data }: MessageEvent<WorkerResponse>) => {
 			if (data.event === AppEvents.Done && data.id === id) {
-				resolve();
 				worker.removeEventListener("message", cb);
+				resolve(data.bounding);
 			}
 		};
 		worker.addEventListener("message", cb);
@@ -47,7 +48,7 @@ const post = <T>(worker: Worker, event: AppEvents, data?: T): Promise<void> => {
 			dd[key] = serializableData(data[key]);
 		}
 
-		const message: WorkerApi<T> = { id, event, data: dd };
+		const message: WorkerRequest<T> = { id, event, data: dd };
 		worker.postMessage(message);
 	});
 };
@@ -71,16 +72,24 @@ const start = async (canvas: HTMLCanvasElement): Promise<() => Promise<DrawingAp
 		return {
 			clear: () => post(worker, AppEvents.Clear),
 			line: (args) => post<LineArguments>(worker, AppEvents.Line, args),
-			circle: (args) => post<CircleArguments>(worker, AppEvents.Circle, args),
-			rectangle: (args) => post<RectangleArguments>(worker, AppEvents.Rectangle, args),
+			circle: (args) =>
+				post<CircleArguments>(worker, AppEvents.Circle, args).then(createBounding),
+			rectangle: (args) =>
+				post<RectangleArguments>(worker, AppEvents.Rectangle, args).then(createBounding),
 			rounded_rectangle: (args) =>
-				post<RoundedRectangleArguments>(worker, AppEvents.RoundedRectangle, args),
-			ellipse: (args) => post<EllipseArguments>(worker, AppEvents.Ellipse, args),
-			arc: (args) => post<ArcArguments>(worker, AppEvents.Arc, args),
-			sector: (args) => post<SectorArguments>(worker, AppEvents.Sector, args),
-			triangle: (args) => post<TriangleArguments>(worker, AppEvents.Triangle, args),
-			polyline: (args) => post<PolylineArguments>(worker, AppEvents.Polyline, args),
-			text: (args) => post<TextArguments>(worker, AppEvents.Text, args),
+				post<RoundedRectangleArguments>(worker, AppEvents.RoundedRectangle, args).then(
+					createBounding,
+				),
+			ellipse: (args) =>
+				post<EllipseArguments>(worker, AppEvents.Ellipse, args).then(createBounding),
+			arc: (args) => post<ArcArguments>(worker, AppEvents.Arc, args).then(createBounding),
+			sector: (args) =>
+				post<SectorArguments>(worker, AppEvents.Sector, args).then(createBounding),
+			triangle: (args) =>
+				post<TriangleArguments>(worker, AppEvents.Triangle, args).then(createBounding),
+			polyline: (args) =>
+				post<PolylineArguments>(worker, AppEvents.Polyline, args).then(createBounding),
+			text: (args) => post<TextArguments>(worker, AppEvents.Text, args).then(createBounding),
 			render: () => {
 				// This MUST be very fast
 				return new Promise((resolve) => {
@@ -117,7 +126,7 @@ const start = async (canvas: HTMLCanvasElement): Promise<() => Promise<DrawingAp
 
 			worker.addEventListener(
 				"message",
-				({ data: { event } }: MessageEvent<WorkerApi<void>>) => {
+				({ data: { event } }: MessageEvent<WorkerRequest<void>>) => {
 					if (event === AppEvents.Ready) {
 						worker.postMessage({
 							event: AppEvents.Start,
@@ -146,4 +155,5 @@ export {
 	Size,
 	Style,
 	TextStyle,
+	Bounding,
 } from "./wasm/canvas.js";

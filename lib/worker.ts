@@ -1,5 +1,4 @@
 import type {
-	WorkerApi,
 	LineArguments,
 	CircleArguments,
 	RectangleArguments,
@@ -10,15 +9,18 @@ import type {
 	TriangleArguments,
 	ArcArguments,
 	SectorArguments,
+	WorkerRequest,
+	BoundingJs,
 } from "./objects.js";
-import init, { Drawing } from "./wasm/canvas.js";
+import init, { Bounding, Drawing } from "./wasm/canvas.js";
 import { AppEvents } from "./objects.js";
 
 // TODO pass `ctx` to Wasm in order to `self.postMessage({ event: "reload" })`?
 const ctx = self as WorkerGlobalScope & typeof globalThis;
 
-const done = (id: string) => {
-	ctx.postMessage({ id, event: AppEvents.Done });
+// We need to expose BoundingJs because the function are not easily serializable.
+const done = (id: string, bounding: BoundingJs) => {
+	ctx.postMessage({ event: AppEvents.Done, id, bounding });
 };
 
 (init as any)().then(() => {
@@ -26,7 +28,7 @@ const done = (id: string) => {
 
 	ctx.addEventListener(
 		"message",
-		({ data: { id, event, data } }: MessageEvent<WorkerApi<any>>) => {
+		({ data: { id, event, data } }: MessageEvent<WorkerRequest<any>>) => {
 			// Setup
 			if (event === AppEvents.Start) {
 				// Receive the Shared Array Buffer from the main thread
@@ -36,6 +38,9 @@ const done = (id: string) => {
 				return;
 			}
 
+			// Intersect
+			let bounding!: BoundingJs;
+
 			// Drawing
 			if (event === AppEvents.Clear) {
 				drawing.clear();
@@ -44,7 +49,7 @@ const done = (id: string) => {
 				drawing.line(startPoint, endPoint, style);
 			} else if (event === AppEvents.Circle) {
 				const { topLeftPoint, diameter, style } = <CircleArguments>data;
-				drawing.circle(topLeftPoint, diameter, style);
+				bounding = drawing.circle(topLeftPoint, diameter, style)?.as_js();
 			} else if (event === AppEvents.Rectangle) {
 				const { topLeftPoint, size, style, radius } = <RectangleArguments>data;
 				drawing.rectangle(topLeftPoint, size, style, radius);
@@ -75,7 +80,7 @@ const done = (id: string) => {
 				drawing.text(position, label, size, textColor, textStyle);
 			}
 
-			done(id);
+			done(id, bounding);
 		},
 	);
 

@@ -8,7 +8,10 @@ use embedded_graphics::{
 		TextStyleBuilder,
 	},
 };
+use num::integer::sqrt;
+use num::{abs, pow};
 use serde::{Deserialize, Serialize};
+use std::cmp::min;
 use wasm_bindgen::prelude::*;
 
 #[derive(Copy, Clone, Serialize, Deserialize)]
@@ -199,6 +202,12 @@ impl Point {
 	pub fn as_js(&self) -> JsValue {
 		serde_wasm_bindgen::to_value(self).unwrap()
 	}
+
+	pub fn distance(&self, other_point: &Point) -> i32 {
+		// Calculate the distance using the Pythagorean Theorem (a^2 + b^2 = c^2)
+		let distance_squared = pow(self.x - other_point.x, 2) + pow(self.y - other_point.y, 2);
+		sqrt(distance_squared)
+	}
 }
 
 impl From<Point> for EgPoint {
@@ -229,6 +238,73 @@ impl Size {
 impl From<Size> for EgSize {
 	fn from(size: Size) -> Self {
 		EgSize::new(size.width, size.height)
+	}
+}
+
+#[derive(Copy, Clone, Serialize, Deserialize)]
+#[wasm_bindgen]
+pub struct Bounding {
+	top_left: Point,
+	size: Size,
+}
+
+#[wasm_bindgen]
+impl Bounding {
+	#[wasm_bindgen(constructor)]
+	pub fn new(top_left: Point, size: Size) -> Self {
+		Bounding { top_left, size }
+	}
+
+	pub fn as_js(&self) -> JsValue {
+		serde_wasm_bindgen::to_value(self).unwrap()
+	}
+
+	pub fn collide(&self, other_box: &Bounding) -> bool {
+		// FIXME dangerous casting
+		!(self.top_left.y + (self.size.height as i32) < other_box.top_left.y
+			|| self.top_left.y > other_box.top_left.y + (other_box.size.height as i32)
+			|| self.top_left.x + (self.size.width as i32) < other_box.top_left.x
+			|| self.top_left.x > other_box.top_left.x + (other_box.size.width as i32))
+	}
+
+	pub fn intersect(&self, point: &Point) -> bool {
+		self.collide(&Bounding::new(*point, Size::new(1, 1)))
+	}
+
+	pub fn distance(&self, point: &Point) -> i32 {
+		// FIXME dangerous casting
+		// Both boxes collide
+		if self.intersect(point) {
+			return 0;
+		}
+
+		// Aligned horizontally
+		if point.y >= self.top_left.y && point.y <= self.top_left.y + (self.size.height as i32) {
+			let right = abs(self.top_left.x + (self.size.width as i32) - point.x);
+			let left = abs(self.top_left.x - point.x);
+			return min(right, left);
+		}
+
+		// Aligned vertically
+		if point.x >= self.top_left.x && point.x <= self.top_left.x + (self.size.width as i32) {
+			let top = abs(self.top_left.y - point.y);
+			let bottom = abs(self.top_left.y + (self.size.height as i32) - point.y);
+			return min(top, bottom);
+		}
+
+		// Distances from the corners
+		let top_left = self.top_left.distance(point);
+		let top_right =
+			Point::new(self.top_left.x + (self.size.width as i32), self.top_left.y).distance(point);
+		let bottom_right = Point::new(
+			self.top_left.x + (self.size.width as i32),
+			self.top_left.y + (self.size.height as i32),
+		)
+		.distance(point);
+		let bottom_left = Point::new(self.top_left.x, self.top_left.y + (self.size.height as i32))
+			.distance(point);
+
+		min(min(top_left, top_right), min(bottom_right, bottom_left))
 	}
 }
 

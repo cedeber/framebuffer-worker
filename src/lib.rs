@@ -1,5 +1,6 @@
 mod objects;
 
+use crate::objects::Bounding;
 use embedded_graphics::primitives::Sector;
 use embedded_graphics::{
 	mono_font::MonoTextStyle,
@@ -74,6 +75,7 @@ impl OriginDimensions for FrameBufferDisplay {
 #[wasm_bindgen]
 pub struct Drawing {
 	display: FrameBufferDisplay,
+	bounding_box: Bounding,
 }
 
 fn from_js<T>(value: JsValue) -> T
@@ -81,6 +83,17 @@ where
 	T: DeserializeOwned,
 {
 	serde_wasm_bindgen::from_value::<T>(value).unwrap()
+}
+
+fn from_optional_js<T>(value: JsValue) -> Option<T>
+where
+	T: DeserializeOwned,
+{
+	if value.is_undefined() {
+		None
+	} else {
+		Some(from_js::<T>(value))
+	}
 }
 
 #[wasm_bindgen]
@@ -96,8 +109,13 @@ impl Drawing {
 			width,
 			height,
 		};
+		let bounding_box =
+			Bounding::new(objects::Point::new(0, 0), objects::Size::new(width, height));
 
-		Self { display }
+		Self {
+			display,
+			bounding_box,
+		}
 	}
 
 	pub fn clear(&mut self) {
@@ -114,13 +132,27 @@ impl Drawing {
 			.unwrap();
 	}
 
-	pub fn circle(&mut self, top_left_point: JsValue, diameter: u32, style: JsValue) {
+	pub fn circle(
+		&mut self,
+		top_left_point: JsValue,
+		diameter: u32,
+		style: JsValue,
+	) -> Option<Bounding> {
 		let top_left_point: objects::Point = from_js(top_left_point);
 		let style: objects::Style = from_js(style);
-		Circle::new(top_left_point.into(), diameter)
-			.into_styled(style.into())
-			.draw(&mut self.display)
-			.unwrap();
+
+		let bounding_box = Bounding::new(top_left_point, objects::Size::new(diameter, diameter));
+
+		if self.bounding_box.collide(&bounding_box) {
+			Circle::new(top_left_point.into(), diameter)
+				.into_styled(style.into())
+				.draw(&mut self.display)
+				.unwrap();
+
+			Some(bounding_box)
+		} else {
+			None
+		}
 	}
 
 	pub fn rectangle(

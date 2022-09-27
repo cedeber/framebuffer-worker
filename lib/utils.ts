@@ -2,7 +2,10 @@
  * Throttle a function but wait that the Promise is resolved before running the next one
  * @see https://underscorejs.org/docs/modules/throttle.html
  */
-function asyncThrottle(func: (...args: any[]) => Promise<unknown>, wait = 0) {
+import type { BoundingJs } from "./objects.js";
+import { Bounding, Point, Size } from "./wasm/canvas.js";
+
+export function asyncThrottle(func: (...args: any[]) => Promise<unknown>, wait = 0) {
 	let timeout: number | undefined;
 	let result: unknown;
 	let previous = 0;
@@ -50,13 +53,13 @@ function asyncThrottle(func: (...args: any[]) => Promise<unknown>, wait = 0) {
 	return throttled;
 }
 
-const uid = (): string => {
+export const uid = (): string => {
 	return Math.random().toString(36).substring(2);
 };
 
 // TODO We should probably go bin/hex within a single loop for performance?
 // This MUST be very fast
-const mergeImage = (layers: Uint8ClampedArray[]): Uint8ClampedArray => {
+export const mergeImage = (layers: Uint8ClampedArray[]): Uint8ClampedArray => {
 	const length = layers[0].length;
 	let final = new Uint8ClampedArray(length);
 
@@ -75,4 +78,10 @@ const mergeImage = (layers: Uint8ClampedArray[]): Uint8ClampedArray => {
 	return final;
 };
 
-export { asyncThrottle, uid, mergeImage };
+export const createBounding = (bounding?: BoundingJs): Bounding | null =>
+	bounding != undefined
+		? new Bounding(
+				new Point(bounding.top_left.x, bounding.top_left.y),
+				new Size(bounding.size.width, bounding.size.height),
+		  )
+		: null;
