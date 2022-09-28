@@ -2,7 +2,7 @@ use embedded_graphics::pixelcolor::Rgb888;
 use embedded_graphics::primitives::{CornerRadii, CornerRadiiBuilder};
 use embedded_graphics::{
 	geometry::{Angle as EgAngle, Point as EgPoint, Size as EgSize},
-	primitives::{PrimitiveStyle, PrimitiveStyleBuilder},
+	primitives::{PrimitiveStyle, PrimitiveStyleBuilder, Rectangle as EgRectangle},
 	text::{
 		Alignment as EgAlignment, Baseline as EgBaseline, TextStyle as EgTextStyle,
 		TextStyleBuilder,
@@ -243,73 +243,6 @@ impl From<Size> for EgSize {
 
 #[derive(Copy, Clone, Serialize, Deserialize)]
 #[wasm_bindgen]
-pub struct Bounding {
-	top_left: Point,
-	size: Size,
-}
-
-#[wasm_bindgen]
-impl Bounding {
-	#[wasm_bindgen(constructor)]
-	pub fn new(top_left: Point, size: Size) -> Self {
-		Bounding { top_left, size }
-	}
-
-	pub fn as_js(&self) -> JsValue {
-		serde_wasm_bindgen::to_value(self).unwrap()
-	}
-
-	pub fn collide(&self, other_box: &Bounding) -> bool {
-		// FIXME dangerous casting
-		!(self.top_left.y + (self.size.height as i32) < other_box.top_left.y
-			|| self.top_left.y > other_box.top_left.y + (other_box.size.height as i32)
-			|| self.top_left.x + (self.size.width as i32) < other_box.top_left.x
-			|| self.top_left.x > other_box.top_left.x + (other_box.size.width as i32))
-	}
-
-	pub fn intersect(&self, point: &Point) -> bool {
-		self.collide(&Bounding::new(*point, Size::new(1, 1)))
-	}
-
-	pub fn distance(&self, point: &Point) -> i32 {
-		// FIXME dangerous casting
-		// Both boxes collide
-		if self.intersect(point) {
-			return 0;
-		}
-
-		// Aligned horizontally
-		if point.y >= self.top_left.y && point.y <= self.top_left.y + (self.size.height as i32) {
-			let right = abs(self.top_left.x + (self.size.width as i32) - point.x);
-			let left = abs(self.top_left.x - point.x);
-			return min(right, left);
-		}
-
-		// Aligned vertically
-		if point.x >= self.top_left.x && point.x <= self.top_left.x + (self.size.width as i32) {
-			let top = abs(self.top_left.y - point.y);
-			let bottom = abs(self.top_left.y + (self.size.height as i32) - point.y);
-			return min(top, bottom);
-		}
-
-		// Distances from the corners
-		let top_left = self.top_left.distance(point);
-		let top_right =
-			Point::new(self.top_left.x + (self.size.width as i32), self.top_left.y).distance(point);
-		let bottom_right = Point::new(
-			self.top_left.x + (self.size.width as i32),
-			self.top_left.y + (self.size.height as i32),
-		)
-		.distance(point);
-		let bottom_left = Point::new(self.top_left.x, self.top_left.y + (self.size.height as i32))
-			.distance(point);
-
-		min(min(top_left, top_right), min(bottom_right, bottom_left))
-	}
-}
-
-#[derive(Copy, Clone, Serialize, Deserialize)]
-#[wasm_bindgen]
 pub struct Corners {
 	top_left: Size,
 	top_right: Size,
@@ -366,5 +299,87 @@ impl Angle {
 impl From<Angle> for EgAngle {
 	fn from(angle: Angle) -> Self {
 		EgAngle::from_degrees(angle.degree)
+	}
+}
+
+#[derive(Copy, Clone, Serialize, Deserialize)]
+#[wasm_bindgen]
+pub struct Rectangle {
+	top_left: Point,
+	size: Size,
+}
+
+#[wasm_bindgen]
+impl Rectangle {
+	#[wasm_bindgen(constructor)]
+	pub fn new(top_left: Point, size: Size) -> Self {
+		Rectangle { top_left, size }
+	}
+
+	pub fn as_js(&self) -> JsValue {
+		serde_wasm_bindgen::to_value(self).unwrap()
+	}
+
+	pub fn collide(&self, other_box: &Rectangle) -> bool {
+		// FIXME dangerous casting
+		!(self.top_left.y + (self.size.height as i32) < other_box.top_left.y
+			|| self.top_left.y > other_box.top_left.y + (other_box.size.height as i32)
+			|| self.top_left.x + (self.size.width as i32) < other_box.top_left.x
+			|| self.top_left.x > other_box.top_left.x + (other_box.size.width as i32))
+	}
+
+	pub fn intersect(&self, point: &Point) -> bool {
+		self.collide(&Rectangle::new(*point, Size::new(1, 1)))
+	}
+
+	pub fn distance(&self, point: &Point) -> i32 {
+		// FIXME dangerous casting
+		// Both boxes collide
+		if self.intersect(point) {
+			return 0;
+		}
+
+		// Aligned horizontally
+		if point.y >= self.top_left.y && point.y <= self.top_left.y + (self.size.height as i32) {
+			let right = abs(self.top_left.x + (self.size.width as i32) - point.x);
+			let left = abs(self.top_left.x - point.x);
+			return min(right, left);
+		}
+
+		// Aligned vertically
+		if point.x >= self.top_left.x && point.x <= self.top_left.x + (self.size.width as i32) {
+			let top = abs(self.top_left.y - point.y);
+			let bottom = abs(self.top_left.y + (self.size.height as i32) - point.y);
+			return min(top, bottom);
+		}
+
+		// Distances from the corners
+		let top_left = self.top_left.distance(point);
+		let top_right =
+			Point::new(self.top_left.x + (self.size.width as i32), self.top_left.y).distance(point);
+		let bottom_right = Point::new(
+			self.top_left.x + (self.size.width as i32),
+			self.top_left.y + (self.size.height as i32),
+		)
+		.distance(point);
+		let bottom_left = Point::new(self.top_left.x, self.top_left.y + (self.size.height as i32))
+			.distance(point);
+
+		min(min(top_left, top_right), min(bottom_right, bottom_left))
+	}
+}
+
+impl From<Rectangle> for EgRectangle {
+	fn from(rectangle: Rectangle) -> Self {
+		EgRectangle::new(rectangle.top_left.into(), rectangle.size.into())
+	}
+}
+
+impl From<EgRectangle> for Rectangle {
+	fn from(rectangle: EgRectangle) -> Self {
+		Rectangle::new(
+			Point::new(rectangle.top_left.x, rectangle.top_left.y),
+			Size::new(rectangle.size.width, rectangle.size.height),
+		)
 	}
 }

@@ -2,8 +2,8 @@
  * Throttle a function but wait that the Promise is resolved before running the next one
  * @see https://underscorejs.org/docs/modules/throttle.html
  */
-import type { BoundingJs } from "./objects.js";
-import { Bounding, Point, Size } from "./wasm/canvas.js";
+import type { Bounding } from "./objects.js";
+import { Point, Rectangle, Size } from "./wasm/canvas.js";
 
 export function asyncThrottle(func: (...args: any[]) => Promise<unknown>, wait = 0) {
 	let timeout: number | undefined;
@@ -78,9 +78,9 @@ export const mergeImage = (layers: Uint8ClampedArray[]): Uint8ClampedArray => {
 	return final;
 };
 
-export const createBounding = (bounding?: BoundingJs): Bounding | null =>
+export const fromBounding = (bounding?: Bounding): Rectangle | null =>
 	bounding != undefined
-		? new Bounding(
+		? new Rectangle(
 				new Point(bounding.top_left.x, bounding.top_left.y),
 				new Size(bounding.size.width, bounding.size.height),
 		  )

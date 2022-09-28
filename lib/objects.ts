@@ -6,7 +6,7 @@ import type {
 	TextStyle,
 	Corners,
 	Angle,
-	Bounding,
+	Rectangle,
 } from "./wasm/canvas.js";
 
 /** Basic data to allow recognition of the event with the Worker */
@@ -20,7 +20,7 @@ interface WorkerRequest<T> extends WorkerCommunication {
 }
 
 interface WorkerResponse extends WorkerCommunication {
-	bounding?: Bounding;
+	bounding?: Rectangle;
 }
 
 interface Shape {
@@ -96,7 +96,8 @@ interface TextArguments {
 	textStyle?: TextStyle;
 }
 
-export type BoundingJs = {
+/** aka. Rectangle */
+export type Bounding = {
 	top_left: { x: number; y: number };
 	size: { width: number; height: number };
 };
@@ -107,16 +108,16 @@ interface DrawingApi {
 	clear(): Promise<void>;
 	/** Render the framebuffer into the Canvas */
 	render(): Promise<void>;
-	line(args: LineArguments): Promise<void>;
-	circle(args: CircleArguments): Promise<Bounding | null>;
-	rectangle(args: RectangleArguments): Promise<Bounding | null>;
-	rounded_rectangle(args: RoundedRectangleArguments): Promise<Bounding | null>;
-	ellipse(args: EllipseArguments): Promise<Bounding | null>;
-	arc(args: ArcArguments): Promise<Bounding | null>;
-	sector(args: SectorArguments): Promise<Bounding | null>;
-	triangle(args: TriangleArguments): Promise<Bounding | null>;
-	polyline(args: PolylineArguments): Promise<Bounding | null>;
-	text(args: TextArguments): Promise<Bounding | null>;
+	line(args: LineArguments): Promise<Rectangle | null>;
+	circle(args: CircleArguments): Promise<Rectangle | null>;
+	rectangle(args: RectangleArguments): Promise<Rectangle | null>;
+	rounded_rectangle(args: RoundedRectangleArguments): Promise<Rectangle | null>;
+	ellipse(args: EllipseArguments): Promise<Rectangle | null>;
+	arc(args: ArcArguments): Promise<Rectangle | null>;
+	sector(args: SectorArguments): Promise<Rectangle | null>;
+	triangle(args: TriangleArguments): Promise<Rectangle | null>;
+	polyline(args: PolylineArguments): Promise<Rectangle | null>;
+	text(args: TextArguments): Promise<Rectangle | null>;
 }
 
 const enum AppEvents {

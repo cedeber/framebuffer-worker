@@ -1,6 +1,5 @@
 mod objects;
 
-use crate::objects::Bounding;
 use embedded_graphics::primitives::Sector;
 use embedded_graphics::{
 	mono_font::MonoTextStyle,
@@ -21,6 +20,28 @@ use wasm_bindgen::prelude::*;
 pub fn main_wasm() -> Result<(), JsValue> {
 	console_error_panic_hook::set_once();
 	Ok(())
+}
+
+fn from_js<T>(value: JsValue) -> T
+where
+	T: DeserializeOwned,
+{
+	serde_wasm_bindgen::from_value::<T>(value).unwrap()
+}
+
+fn _from_optional_js<T>(value: JsValue) -> Option<T>
+where
+	T: DeserializeOwned,
+{
+	if value.is_undefined() {
+		None
+	} else {
+		Some(from_js::<T>(value))
+	}
+}
+
+fn is_inside(container: &Rectangle, inner_box: &Rectangle) -> bool {
+	!container.intersection(inner_box).is_zero_sized()
 }
 
 // https://docs.rs/embedded-graphics-core/latest/embedded_graphics_core/draw_target/trait.DrawTarget.html
@@ -75,25 +96,7 @@ impl OriginDimensions for FrameBufferDisplay {
 #[wasm_bindgen]
 pub struct Drawing {
 	display: FrameBufferDisplay,
-	bounding_box: Bounding,
-}
-
-fn from_js<T>(value: JsValue) -> T
-where
-	T: DeserializeOwned,
-{
-	serde_wasm_bindgen::from_value::<T>(value).unwrap()
-}
-
-fn from_optional_js<T>(value: JsValue) -> Option<T>
-where
-	T: DeserializeOwned,
-{
-	if value.is_undefined() {
-		None
-	} else {
-		Some(from_js::<T>(value))
-	}
+	bounding_box: Rectangle,
 }
 
 #[wasm_bindgen]
@@ -109,8 +112,7 @@ impl Drawing {
 			width,
 			height,
 		};
-		let bounding_box =
-			Bounding::new(objects::Point::new(0, 0), objects::Size::new(width, height));
+		let bounding_box = Rectangle::new(Point::new(0, 0), Size::new(width, height));
 
 		Self {
 			display,
@@ -122,14 +124,28 @@ impl Drawing {
 		self.display.reset();
 	}
 
-	pub fn line(&mut self, start_point: JsValue, end_point: JsValue, style: JsValue) {
+	pub fn line(
+		&mut self,
+		start_point: JsValue,
+		end_point: JsValue,
+		style: JsValue,
+	) -> Option<objects::Rectangle> {
 		let start_point: objects::Point = from_js(start_point);
 		let end_point: objects::Point = from_js(end_point);
 		let style: objects::Style = from_js(style);
-		Line::new(start_point.into(), end_point.into())
-			.into_styled(style.into())
-			.draw(&mut self.display)
-			.unwrap();
+
+		let line = Line::new(start_point.into(), end_point.into());
+		let bounding_box = line.bounding_box();
+
+		if is_inside(&self.bounding_box, &bounding_box) {
+			line.into_styled(style.into())
+				.draw(&mut self.display)
+				.unwrap();
+
+			Some(bounding_box.into())
+		} else {
+			None
+		}
 	}
 
 	pub fn circle(
@@ -137,19 +153,20 @@ impl Drawing {
 		top_left_point: JsValue,
 		diameter: u32,
 		style: JsValue,
-	) -> Option<Bounding> {
+	) -> Option<objects::Rectangle> {
 		let top_left_point: objects::Point = from_js(top_left_point);
 		let style: objects::Style = from_js(style);
 
-		let bounding_box = Bounding::new(top_left_point, objects::Size::new(diameter, diameter));
+		let circle = Circle::new(top_left_point.into(), diameter);
+		let bounding_box = circle.bounding_box();
 
-		if self.bounding_box.collide(&bounding_box) {
-			Circle::new(top_left_point.into(), diameter)
+		if is_inside(&self.bounding_box, &bounding_box) {
+			circle
 				.into_styled(style.into())
 				.draw(&mut self.display)
 				.unwrap();
 
-			Some(bounding_box)
+			Some(bounding_box.into())
 		} else {
 			None
 		}
@@ -161,22 +178,30 @@ impl Drawing {
 		size: JsValue,
 		style: JsValue,
 		radius: Option<u32>,
-	) {
+	) -> Option<objects::Rectangle> {
 		let top_left_point: objects::Point = from_js(top_left_point);
 		let size: objects::Size = from_js(size);
 		let style: objects::Style = from_js(style);
-		let rectangle = Rectangle::new(top_left_point.into(), size.into());
 
-		if let Some(radius) = radius {
-			RoundedRectangle::with_equal_corners(rectangle, Size::new(radius, radius))
-				.into_styled(style.into())
-				.draw(&mut self.display)
-				.unwrap();
+		let rectangle = Rectangle::new(top_left_point.into(), size.into());
+		let bounding_box = rectangle.bounding_box();
+
+		if is_inside(&self.bounding_box, &bounding_box) {
+			if let Some(radius) = radius {
+				RoundedRectangle::with_equal_corners(rectangle, Size::new(radius, radius))
+					.into_styled(style.into())
+					.draw(&mut self.display)
+					.unwrap();
+			} else {
+				rectangle
+					.into_styled(style.into())
+					.draw(&mut self.display)
+					.unwrap();
+			}
+
+			Some(bounding_box.into())
 		} else {
-			rectangle
-				.into_styled(style.into())
-				.draw(&mut self.display)
-				.unwrap();
+			None
 		}
 	}
 
@@ -186,17 +211,25 @@ impl Drawing {
 		size: JsValue,
 		style: JsValue,
 		corners: JsValue,
-	) {
+	) -> Option<objects::Rectangle> {
 		let top_left_point: objects::Point = from_js(top_left_point);
 		let size: objects::Size = from_js(size);
 		let style: objects::Style = from_js(style);
 		let corners: objects::Corners = from_js(corners);
-		let rectangle = Rectangle::new(top_left_point.into(), size.into());
 
-		RoundedRectangle::new(rectangle, corners.into())
-			.into_styled(style.into())
-			.draw(&mut self.display)
-			.unwrap();
+		let rectangle = Rectangle::new(top_left_point.into(), size.into());
+		let bounding_box = rectangle.bounding_box();
+
+		if is_inside(&self.bounding_box, &bounding_box) {
+			RoundedRectangle::new(rectangle, corners.into())
+				.into_styled(style.into())
+				.draw(&mut self.display)
+				.unwrap();
+
+			Some(bounding_box.into())
+		} else {
+			None
+		}
 	}
 
 	pub fn arc(
@@ -206,21 +239,29 @@ impl Drawing {
 		angle_start: JsValue,
 		angle_sweep: JsValue,
 		style: JsValue,
-	) {
+	) -> Option<objects::Rectangle> {
 		let top_left_point: objects::Point = from_js(top_left_point);
 		let angle_start: objects::Angle = from_js(angle_start);
 		let angle_sweep: objects::Angle = from_js(angle_sweep);
 		let style: objects::Style = from_js(style);
 
-		Arc::new(
+		let arc = Arc::new(
 			top_left_point.into(),
 			diameter,
 			angle_start.into(),
 			angle_sweep.into(),
-		)
-		.into_styled(style.into())
-		.draw(&mut self.display)
-		.unwrap();
+		);
+		let bounding_box = arc.bounding_box();
+
+		if is_inside(&self.bounding_box, &bounding_box) {
+			arc.into_styled(style.into())
+				.draw(&mut self.display)
+				.unwrap();
+
+			Some(bounding_box.into())
+		} else {
+			None
+		}
 	}
 
 	pub fn sector(
@@ -230,32 +271,55 @@ impl Drawing {
 		angle_start: JsValue,
 		angle_sweep: JsValue,
 		style: JsValue,
-	) {
+	) -> Option<objects::Rectangle> {
 		let top_left_point: objects::Point = from_js(top_left_point);
 		let angle_start: objects::Angle = from_js(angle_start);
 		let angle_sweep: objects::Angle = from_js(angle_sweep);
 		let style: objects::Style = from_js(style);
 
-		Sector::new(
+		let sector = Sector::new(
 			top_left_point.into(),
 			diameter,
 			angle_start.into(),
 			angle_sweep.into(),
-		)
-		.into_styled(style.into())
-		.draw(&mut self.display)
-		.unwrap();
+		);
+		let bounding_box = sector.bounding_box();
+
+		if is_inside(&self.bounding_box, &bounding_box) {
+			sector
+				.into_styled(style.into())
+				.draw(&mut self.display)
+				.unwrap();
+
+			Some(bounding_box.into())
+		} else {
+			None
+		}
 	}
 
-	pub fn ellipse(&mut self, top_left_point: JsValue, size: JsValue, style: JsValue) {
+	pub fn ellipse(
+		&mut self,
+		top_left_point: JsValue,
+		size: JsValue,
+		style: JsValue,
+	) -> Option<objects::Rectangle> {
 		let top_left_point: objects::Point = from_js(top_left_point);
 		let size: objects::Size = from_js(size);
 		let style: objects::Style = from_js(style);
 
-		Ellipse::new(top_left_point.into(), size.into())
-			.into_styled(style.into())
-			.draw(&mut self.display)
-			.unwrap();
+		let ellipse = Ellipse::new(top_left_point.into(), size.into());
+		let bounding_box = ellipse.bounding_box();
+
+		if is_inside(&self.bounding_box, &bounding_box) {
+			ellipse
+				.into_styled(style.into())
+				.draw(&mut self.display)
+				.unwrap();
+
+			Some(bounding_box.into())
+		} else {
+			None
+		}
 	}
 
 	pub fn triangle(
@@ -264,26 +328,45 @@ impl Drawing {
 		vertex2: JsValue,
 		vertex3: JsValue,
 		style: JsValue,
-	) {
+	) -> Option<objects::Rectangle> {
 		let vertex1: objects::Point = from_js(vertex1);
 		let vertex2: objects::Point = from_js(vertex2);
 		let vertex3: objects::Point = from_js(vertex3);
 		let style: objects::Style = from_js(style);
 
-		Triangle::new(vertex1.into(), vertex2.into(), vertex3.into())
-			.into_styled(style.into())
-			.draw(&mut self.display)
-			.unwrap();
+		let triangle = Triangle::new(vertex1.into(), vertex2.into(), vertex3.into());
+		let bounding_box = triangle.bounding_box();
+
+		if is_inside(&self.bounding_box, &bounding_box) {
+			triangle
+				.into_styled(style.into())
+				.draw(&mut self.display)
+				.unwrap();
+
+			Some(bounding_box.into())
+		} else {
+			None
+		}
 	}
 
-	pub fn polyline(&mut self, points: JsValue, style: JsValue) {
+	pub fn polyline(&mut self, points: JsValue, style: JsValue) -> Option<objects::Rectangle> {
 		let points: Vec<objects::Point> = serde_wasm_bindgen::from_value(points).unwrap();
 		let points: Vec<Point> = points.iter().map(|point| (*point).into()).collect();
 		let style: objects::Style = serde_wasm_bindgen::from_value(style).unwrap();
-		Polyline::new(points.as_slice())
-			.into_styled(style.into())
-			.draw(&mut self.display)
-			.unwrap();
+
+		let polyline = Polyline::new(points.as_slice());
+		let bounding_box = polyline.bounding_box();
+
+		if is_inside(&self.bounding_box, &bounding_box) {
+			polyline
+				.into_styled(style.into())
+				.draw(&mut self.display)
+				.unwrap();
+
+			Some(bounding_box.into())
+		} else {
+			None
+		}
 	}
 
 	pub fn text(
@@ -293,7 +376,7 @@ impl Drawing {
 		size: u8,
 		text_color: JsValue,
 		text_style: JsValue,
-	) {
+	) -> Option<objects::Rectangle> {
 		let position: objects::Point = serde_wasm_bindgen::from_value(position).unwrap();
 		let text_color: objects::Color = serde_wasm_bindgen::from_value(text_color).unwrap();
 		let text_style: Option<objects::TextStyle> = if text_style.is_undefined() {
@@ -318,6 +401,13 @@ impl Drawing {
 			Text::new(label, position.into(), character_style)
 		};
 
-		text.draw(&mut self.display).unwrap();
+		let bounding_box = text.bounding_box();
+
+		if is_inside(&self.bounding_box, &bounding_box) {
+			text.draw(&mut self.display).unwrap();
+			Some(bounding_box.into())
+		} else {
+			None
+		}
 	}
 }

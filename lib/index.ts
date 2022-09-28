@@ -13,9 +13,9 @@ import type {
 	WorkerResponse,
 	WorkerRequest,
 } from "./objects.js";
-import { createBounding, mergeImage, uid } from "./utils.js";
+import { fromBounding, mergeImage, uid } from "./utils.js";
 import { AppEvents } from "./objects.js";
-import init, { Bounding } from "./wasm/canvas.js";
+import init from "./wasm/canvas.js";
 
 /**
  * On the Rust size, we have implemented as_js() to export it as JS abject thanks to `serde`.
@@ -71,25 +71,25 @@ const start = async (canvas: HTMLCanvasElement): Promise<() => Promise<DrawingAp
 
 		return {
 			clear: () => post(worker, AppEvents.Clear),
-			line: (args) => post<LineArguments>(worker, AppEvents.Line, args),
+			line: (args) => post<LineArguments>(worker, AppEvents.Line, args).then(fromBounding),
 			circle: (args) =>
-				post<CircleArguments>(worker, AppEvents.Circle, args).then(createBounding),
+				post<CircleArguments>(worker, AppEvents.Circle, args).then(fromBounding),
 			rectangle: (args) =>
-				post<RectangleArguments>(worker, AppEvents.Rectangle, args).then(createBounding),
+				post<RectangleArguments>(worker, AppEvents.Rectangle, args).then(fromBounding),
 			rounded_rectangle: (args) =>
 				post<RoundedRectangleArguments>(worker, AppEvents.RoundedRectangle, args).then(
-					createBounding,
+					fromBounding,
 				),
 			ellipse: (args) =>
-				post<EllipseArguments>(worker, AppEvents.Ellipse, args).then(createBounding),
-			arc: (args) => post<ArcArguments>(worker, AppEvents.Arc, args).then(createBounding),
+				post<EllipseArguments>(worker, AppEvents.Ellipse, args).then(fromBounding),
+			arc: (args) => post<ArcArguments>(worker, AppEvents.Arc, args).then(fromBounding),
 			sector: (args) =>
-				post<SectorArguments>(worker, AppEvents.Sector, args).then(createBounding),
+				post<SectorArguments>(worker, AppEvents.Sector, args).then(fromBounding),
 			triangle: (args) =>
-				post<TriangleArguments>(worker, AppEvents.Triangle, args).then(createBounding),
+				post<TriangleArguments>(worker, AppEvents.Triangle, args).then(fromBounding),
 			polyline: (args) =>
-				post<PolylineArguments>(worker, AppEvents.Polyline, args).then(createBounding),
-			text: (args) => post<TextArguments>(worker, AppEvents.Text, args).then(createBounding),
+				post<PolylineArguments>(worker, AppEvents.Polyline, args).then(fromBounding),
+			text: (args) => post<TextArguments>(worker, AppEvents.Text, args).then(fromBounding),
 			render: () => {
 				// This MUST be very fast
 				return new Promise((resolve) => {
@@ -155,5 +155,5 @@ export {
 	Size,
 	Style,
 	TextStyle,
-	Bounding,
+	Rectangle,
 } from "./wasm/canvas.js";

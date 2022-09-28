@@ -1,5 +1,4 @@
-import { init, asyncThrottle, Point, Color, Size, Style, Angle, Bounding } from "./lib/index.js";
-import { createBounding } from "./lib/utils.js";
+import { init, asyncThrottle, Point, Color, Size, Style, Angle } from "./lib/index.js";
 
 // Animate the loading spinner via JavaScript to see if the main thread is not blocked.
 const loading = document.getElementById("loading");
@@ -28,7 +27,7 @@ layer().then(
 		let cursor = { x: 0, y: 0 };
 		let frameCounter = 0;
 
-		/** @type Map<string, Bounding> */
+		/** @type Map<string, Rectangle> */
 		let boundingBoxes = new Map();
 
 		/** @type string */
@@ -61,12 +60,8 @@ layer().then(
 				topLeftPoint: new Point(50, 100),
 				size: new Size(300, 40),
 				style: new Style(new Color(255, 255, 255), new Color(255, 10, 18), 1),
-			});
-			await triangle({
-				vertex1: new Point(10, 64),
-				vertex2: new Point(50, 64),
-				vertex3: new Point(60, 44),
-				style: new Style(new Color(48, 120, 214)),
+			}).then((bounding) => {
+				if (bounding) boundingBoxes.set("elipse", bounding);
 			});
 			await polyline({
 				points: [
@@ -82,6 +77,16 @@ layer().then(
 					new Point(300, 64),
 				],
 				style: new Style(undefined, new Color(176, 230, 156), 3),
+			}).then((bounding) => {
+				if (bounding) boundingBoxes.set("polyline", bounding);
+			});
+			await triangle({
+				vertex1: new Point(10, 64),
+				vertex2: new Point(50, 64),
+				vertex3: new Point(60, 44),
+				style: new Style(new Color(48, 120, 214)),
+			}).then((bounding) => {
+				if (bounding) boundingBoxes.set("triangle", bounding);
 			});
 			await arc({
 				topLeftPoint: new Point(100, 240),
@@ -89,6 +94,8 @@ layer().then(
 				angleStart: new Angle(0),
 				angleSweep: new Angle(72),
 				style: new Style(undefined, new Color(127, 127, 127), 5),
+			}).then((bounding) => {
+				if (bounding) boundingBoxes.set("arc", bounding);
 			});
 			await sector({
 				topLeftPoint: new Point(80, 260),
@@ -96,12 +103,16 @@ layer().then(
 				angleStart: new Angle(35),
 				angleSweep: new Angle(300),
 				style: new Style(new Color(253, 216, 53)),
+			}).then((bounding) => {
+				if (bounding) boundingBoxes.set("sector", bounding);
 			});
 			await text({
 				position: new Point(3, 12),
 				label: frameCounter.toString(),
 				size: 9,
 				textColor: new Color(33, 33, 33),
+			}).then((bounding) => {
+				if (bounding) boundingBoxes.set("text", bounding);
 			});
 			frameCounter++;
 		};
