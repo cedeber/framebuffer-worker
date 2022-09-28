@@ -242,6 +242,71 @@ await text({
 });
 ```
 
+## Interactivity
+
+You can, since v1.1, add some interactivity. Each primitive returns a bounding box, a rectangle, which allow you to check the intersection with the pointer.
+
+```javascript
+const canvas = document.getElementById("canvas");
+const layer = await init(canvas);
+
+let otherLayerApi;
+
+layer().then(async ({ clear, render, circle }) => {
+  let cursor;
+  let boundingBoxes = new Map();
+  let hoverBounding;
+
+  await clear();
+  for (let i = 0; i < 900; i++) {
+    let id = `circle-${i}`;
+    const diameter = 10;
+    const perLine = Math.floor(canvas.width / (diameter + 2)) - 1;
+    await circle({
+      topLeftPoint: new Point(
+        (diameter + 2) * (i % perLine) + 5,
+        5 + (diameter + 2) * Math.floor(i / perLine),
+      ),
+      diameter,
+      style: new Style(new Color(176, 230, 156), new Color(255, 105, 180), 1),
+    }).then((bounding) => {
+      if (bounding) boundingBoxes.set(id, bounding);
+    });
+  }
+  await render();
+
+  canvas.addEventListener(
+    "pointermove",
+    asyncThrottle(async (event) => {
+      hoverBounding = undefined;
+      cursor = new Point(event.offsetX, event.offsetY);
+
+      for (const bounding of boundingBoxes.values()) {
+        if (bounding.intersect(cursor)) {
+          hoverBounding = bounding.as_js();
+        }
+      }
+
+      await otherLayerApi?.clear();
+
+      if (hoverBounding) {
+        await otherLayerApi?.rectangle({
+          topLeftPoint: new Point(hoverBounding.top_left.x, hoverBounding.top_left.y),
+          size: new Size(hoverBounding.size.width, hoverBounding.size.height),
+          style: new Style(undefined, new Color(100, 180, 255), 2),
+        });
+      }
+
+      await otherLayerApi?.render();
+    }, 16),
+  );
+});
+
+layer().then(async (api) => {
+  otherLayerApi = api;
+});
+```
+
 ## Server configuration
 
 ### SharedArrayBuffer support
