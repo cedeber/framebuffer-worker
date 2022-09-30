@@ -66,9 +66,6 @@ layer().then(async ({ clear, render, line }) => {
 });
 ```
 
-You can [play with it on StackBlitz](https://stackblitz.com/edit/framebuffer-worker?file=src/main.ts&view=editor).
-Open the preview in a new tab because the vite config changes the headers. See bellow.
-
 ## Basics
 
 ### Layers
