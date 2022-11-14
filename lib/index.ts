@@ -18,7 +18,7 @@ import { AppEvents } from "./objects.js";
 import init from "./wasm/canvas.js";
 
 /**
- * On the Rust size, we have implemented as_js() to export it as JS abject thanks to `serde`.
+ * On the Rust side, we have implemented as_js() to export it as JS abject thanks to `serde`.
  */
 function serializableData(data: any): any {
 	if (typeof data.as_js === "function") {
