@@ -38,7 +38,7 @@
 	},
 	"homepage": "https://github.com/cedeber/framebuffer-worker#readme",
 	"devDependencies": {
-		"esbuild": "^0.15.5",
+		"esbuild": "^0.25.0",
 		"typescript": "^4.7.4"
 	}
 }
